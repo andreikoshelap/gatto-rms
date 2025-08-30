@@ -14,5 +14,6 @@ public class ResourceDTO {
     private String type;
     private String countryCode;
     private List<CharacteristicDTO> characteristics;
+    private LocationDTO location;
 }
 

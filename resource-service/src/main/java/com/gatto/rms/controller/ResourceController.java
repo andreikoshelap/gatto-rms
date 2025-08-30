@@ -1,12 +1,15 @@
 package com.gatto.rms.controller;
 
+import com.gatto.rms.dto.ResourceDTO;
 import com.gatto.rms.entity.Resource;
+import com.gatto.rms.mapper.ResourceMapper;
 import com.gatto.rms.repository.ResourceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/resources")
 @RequiredArgsConstructor
@@ -21,8 +24,10 @@ public class ResourceController {
 
 
     @GetMapping
-    public List<Resource> all() {
-        return repository.findAll();
+    public List<ResourceDTO> all() {
+        return repository.findAll().stream()
+                .map(ResourceMapper::toDTO)
+                .toList();
     }
 
 
