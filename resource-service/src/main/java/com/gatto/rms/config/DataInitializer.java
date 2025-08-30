@@ -13,7 +13,6 @@ import java.util.List;
 public class DataInitializer {
     private final ResourceRepository repository;
 
-
     @PostConstruct
     public void init() {
         Location loc1 = new Location();

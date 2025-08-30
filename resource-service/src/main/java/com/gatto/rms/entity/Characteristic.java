@@ -1,10 +1,17 @@
 package com.gatto.rms.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
+@Table(name = "characeristic")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Characteristic {
     @Id @GeneratedValue
     private Long id;

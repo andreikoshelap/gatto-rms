@@ -1,12 +1,19 @@
 package com.gatto.rms.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
 @Entity
+@Table(name = "resource")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Resource {
     @Id
     @GeneratedValue
