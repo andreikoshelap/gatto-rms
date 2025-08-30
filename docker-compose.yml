@@ -1,0 +1,53 @@
+services:
+  resource-app:
+    build:
+      context: ./resource-service
+      dockerfile: resource-service.dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://resource-postgres:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=admin
+    depends_on:
+      - resource-postgres
+
+  resource-postgres:
+    image: postgres:13
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=postgres
+    volumes:
+      - pgdata_resource:/var/lib/postgresql/data
+
+  kafka-app:
+    build:
+      context: ./kafka-producer-service
+      dockerfile: kafka-producer.dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - SERVER_PORT=8081
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://kafka-postgres:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=admin
+    depends_on:
+      - kafka-postgres
+
+  kafka-postgres:
+    image: postgres:13
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=postgres
+    volumes:
+      - pgdata_kafka:/var/lib/postgresql/data
+
+volumes:
+  pgdata_resource:
+  pgdata_kafka:
