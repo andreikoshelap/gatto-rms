@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Entity
-@Table(name = "characeristic")
+@Table(name = "characteristic")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

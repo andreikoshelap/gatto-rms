@@ -1,25 +1,16 @@
-package com.gatto.rms.entity;
+package com.gatto.rms.dto;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Entity
-@Table(name = "location")
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class Location {
-    @Id
-    @GeneratedValue
+@AllArgsConstructor
+public class LocationDTO {
     private Long id;
-
     private String streetAddress;
     private String city;
     private String postalCode;
@@ -27,3 +18,4 @@ public class Location {
     private double latitude;
     private double longitude;
 }
+

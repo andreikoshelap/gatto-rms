@@ -2,6 +2,8 @@ package com.gatto.rms.dto;
 
 import lombok.*;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -11,6 +13,6 @@ public class ResourceDTO {
     private Long id;
     private String type;
     private String countryCode;
-    private Long locationId;
-//    private List<Characteristic> characteristics;
+    private List<CharacteristicDTO> characteristics;
 }
+
