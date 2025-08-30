@@ -1,3 +1,4 @@
+<div *ngIf="mapReady">
 <google-map
   height="600px"
   width="100%"
@@ -11,3 +12,7 @@
     [title]="marker.title"
   ></map-marker>
 </google-map>
+</div>
+<div *ngIf="!mapReady">
+  <p>Map loading...</p>
+</div>
