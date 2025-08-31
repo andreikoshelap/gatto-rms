@@ -81,5 +81,81 @@ public class DataInitializer {
         repository.save(r1);
         repository.save(r2);
         repository.save(r3);
+
+        // Resource 4: Charging Point in Estonia
+        Location loc4 = new Location();
+        loc4.setStreetAddress("Pärnu mnt 22");
+        loc4.setCity("Tallinn");
+        loc4.setPostalCode("10141");
+        loc4.setCountryCode("EE");
+        loc4.setLatitude(59.4315);
+        loc4.setLongitude(24.7468);
+
+        Characteristic c4 = new Characteristic();
+        c4.setCode("C4");
+        c4.setType(CharacteristicType.CHARGING_POINT);
+        c4.setValue("fast");
+
+        Resource r4 = new Resource();
+        r4.setType(ResourceType.METERING_POINT);
+        r4.setCountryCode("EE");
+        r4.setLocation(loc4);
+        c4.setResource(r4);
+        r4.setCharacteristics(List.of(c4));
+        repository.save(r4);
+
+        // Resource 5: Latvia, 2 CONNECTION_POINT_STATUS characteristics
+        Location loc5 = new Location();
+        loc5.setStreetAddress("Dzirnavu iela 67");
+        loc5.setCity("Riga");
+        loc5.setPostalCode("LV-1011");
+        loc5.setCountryCode("LV");
+        loc5.setLatitude(56.9537);
+        loc5.setLongitude(24.1256);
+
+        Characteristic c5a = new Characteristic();
+        c5a.setCode("C5A");
+        c5a.setType(CharacteristicType.CONNECTION_POINT_STATUS);
+        c5a.setValue("active");
+        Characteristic c5b = new Characteristic();
+        c5b.setCode("C5B");
+        c5b.setType(CharacteristicType.CONNECTION_POINT_STATUS);
+        c5b.setValue("maintenance");
+
+        Resource r5 = new Resource();
+        r5.setType(ResourceType.CONNECTION_POINT);
+        r5.setCountryCode("LV");
+        r5.setLocation(loc5);
+        c5a.setResource(r5);
+        c5b.setResource(r5);
+        r5.setCharacteristics(List.of(c5a, c5b));
+        repository.save(r5);
+
+        // Resource 6: Estonia, 2 CONNECTION_POINT_STATUS characteristics
+        Location loc6 = new Location();
+        loc6.setStreetAddress("Narva mnt 5");
+        loc6.setCity("Narva");
+        loc6.setPostalCode("21003");
+        loc6.setCountryCode("EE");
+        loc6.setLatitude(59.3772);
+        loc6.setLongitude(28.1903);
+
+        Characteristic c6a = new Characteristic();
+        c6a.setCode("C6A");
+        c6a.setType(CharacteristicType.CONNECTION_POINT_STATUS);
+        c6a.setValue("inactive");
+        Characteristic c6b = new Characteristic();
+        c6b.setCode("C6B");
+        c6b.setType(CharacteristicType.CONNECTION_POINT_STATUS);
+        c6b.setValue("pending");
+
+        Resource r6 = new Resource();
+        r6.setType(ResourceType.CONNECTION_POINT);
+        r6.setCountryCode("EE");
+        r6.setLocation(loc6);
+        c6a.setResource(r6);
+        c6b.setResource(r6);
+        r6.setCharacteristics(List.of(c6a, c6b));
+        repository.save(r6);
     }
 }

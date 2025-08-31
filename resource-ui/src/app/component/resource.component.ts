@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, signal} from '@angular/core';
 import {GoogleMap, MapMarker} from '@angular/google-maps';
 import {NgForOf, NgIf} from '@angular/common';
 import { GoogleMapsLoaderService } from '../service/google-maps-loader.service';
@@ -21,6 +21,7 @@ export class ResourceComponent implements OnInit {
   markers: any[] = [];
   zoom = 7;
   mapReady = false;
+  resources = signal<Resource[]>([]);
 
   constructor(
     private googleMapsLoader: GoogleMapsLoaderService,
@@ -38,7 +39,7 @@ export class ResourceComponent implements OnInit {
               lng: resource.location.longitude
             },
             label: resource.type.charAt(0),
-            title: `${resource.type} in ${resource.location.city}`
+            title: `${resource.type} in ${resource.location.city} - ${resource.characteristics.map(c => c.value).join(', ')}`
           }));
           this.mapReady = true;
         },
