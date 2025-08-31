@@ -3,13 +3,14 @@
   height="600px"
   width="100%"
   [center]="center"
-  [zoom]="7"
+  [zoom]="zoom"
 >
   <map-marker
     *ngFor="let marker of markers"
     [position]="marker.position"
     [label]="marker.label"
     [title]="marker.title"
+    (mapClick)="openResourceDialog(marker.resource)"
   ></map-marker>
 </google-map>
 </div>

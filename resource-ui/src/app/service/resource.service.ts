@@ -24,4 +24,8 @@ export class ResourceService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  updateResource(resource: Resource): Observable<Resource> {
+    return this.http.put<Resource>(`${this.apiUrl}/${resource.id}`, resource);
+  }
 }

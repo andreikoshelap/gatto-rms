@@ -1,0 +1,29 @@
+<div class="square-dialog">
+  <h2 mat-dialog-title>Manage Characteristics</h2>
+  <div mat-dialog-content style="flex: 1; overflow: auto;">
+    <div *ngFor="let characteristic of data.resource.characteristics; let i = index">
+      <mat-form-field appearance="fill">
+        <mat-label>Code</mat-label>
+        <input matInput [(ngModel)]="characteristic.code">
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Type</mat-label>
+        <mat-select [(ngModel)]="characteristic.type">
+          <mat-option *ngFor="let type of ['CONSUMPTION_TYPE', 'CHARGING_POINT', 'CONNECTION_POINT_STATUS']" [value]="type">
+            {{ type }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Value</mat-label>
+        <input matInput [(ngModel)]="characteristic.value">
+      </mat-form-field>
+      <button mat-button color="warn" (click)="removeCharacteristic(i)">Remove</button>
+    </div>
+    <button mat-button (click)="addCharacteristic()">Add Characteristic</button>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="cancel()">Cancel</button>
+    <button mat-button color="primary" (click)="save()">Save</button>
+  </div>
+</div>
