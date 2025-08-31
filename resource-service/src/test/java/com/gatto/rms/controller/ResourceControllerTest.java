@@ -1,92 +1,148 @@
 package com.gatto.rms.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gatto.rms.entity.Resource;
-import com.gatto.rms.entity.ResourceType;
-import com.gatto.rms.repository.ResourceRepository;
+import com.gatto.rms.dto.ResourceDTO;
+import com.gatto.rms.service.ResourceService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
-import java.util.Collections;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
 class ResourceControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ResourceRepository repository;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    private Resource resource;
+    private ResourceService resourceService;
+    private ResourceController controller;
 
     @BeforeEach
     void setUp() {
-        resource = new Resource();
-        resource.setId(1L);
-        resource.setType(ResourceType.METERING_POINT);
-        resource.setCountryCode("EE");
-        resource.setLocation(null);
-        resource.setCharacteristics(Collections.emptyList());
-
-        repository.save(resource);
-    }
-
-//    @Test
-//    void testGetResourceById() throws Exception {
-//        mockMvc.perform(get("/api/resources/1"))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.id").value(1))
-//                .andExpect(jsonPath("$.type").value("METERING_POINT"));
-//    }
-
-    @Test
-    void testCreateResource() throws Exception {
-        Resource newResource = new Resource();
-        newResource.setType(ResourceType.CONNECTION_POINT);
-        newResource.setCountryCode("LV");
-        newResource.setLocation(null);
-        newResource.setCharacteristics(Collections.emptyList());
-
-        mockMvc.perform(post("/api/resources")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(newResource)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.type").value("CONNECTION_POINT"))
-                .andExpect(jsonPath("$.countryCode").value("LV"));
+        resourceService = mock(ResourceService.class);
+        controller = new ResourceController(resourceService);
     }
 
     @Test
-    void testUpdateResource() throws Exception {
-        resource.setCountryCode("FI");
+    void testCreate() {
+        ResourceDTO input = new ResourceDTO();
+        input.setId(1L);
 
-        mockMvc.perform(put("/api/resources/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(resource)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.countryCode").value("FI"));
+        when(resourceService.save(1L, input)).thenReturn(input);
+
+        ResponseEntity<ResourceDTO> response = controller.create(input);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(input, response.getBody());
     }
 
     @Test
-    void testDeleteResource() throws Exception {
-        mockMvc.perform(delete("/api/resources/1"))
-                .andExpect(status().isOk());
+    void testAll() {
+        ResourceDTO dto = new ResourceDTO();
+        dto.setId(1L);
 
-        Optional<Resource> deletedResource = repository.findById(1L);
-        assert (deletedResource.isEmpty());
+        when(resourceService.getAllResources()).thenReturn(List.of(dto));
+
+        List<ResourceDTO> result = controller.all();
+        assertEquals(1, result.size());
+        assertEquals(1L, result.get(0).getId());
+    }
+
+    @Test
+    void testGetFound() {
+        ResourceDTO dto = new ResourceDTO();
+        dto.setId(1L);
+
+        when(resourceService.findById(1L)).thenReturn(Optional.of(dto));
+
+        ResponseEntity<ResourceDTO> response = controller.get(1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(dto, response.getBody());
+    }
+
+    @Test
+    void testGetNotFound() {
+        when(resourceService.findById(1L)).thenReturn(Optional.empty());
+
+        ResponseEntity<ResourceDTO> response = controller.get(1L);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    void testGetOptimisticLockingFailure() {
+        when(resourceService.findById(1L)).thenThrow(new ObjectOptimisticLockingFailureException("Resource", 1L));
+
+        ResponseEntity<ResourceDTO> response = controller.get(1L);
+
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+    }
+
+    @Test
+    void testUpdateOk() {
+        ResourceDTO dto = new ResourceDTO();
+        dto.setId(1L);
+
+        when(resourceService.save(1L, dto)).thenReturn(dto);
+
+        ResponseEntity<ResourceDTO> response = controller.update(1L, dto);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(dto, response.getBody());
+    }
+
+    @Test
+    void testUpdateNotFound() {
+        ResourceDTO dto = new ResourceDTO();
+        dto.setId(1L);
+
+        when(resourceService.save(1L, dto)).thenThrow(NoSuchElementException.class);
+
+        ResponseEntity<ResourceDTO> response = controller.update(1L, dto);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    void testUpdateConflict() {
+        ResourceDTO dto = new ResourceDTO();
+        dto.setId(1L);
+
+        when(resourceService.save(1L, dto)).thenThrow(ObjectOptimisticLockingFailureException.class);
+
+        ResponseEntity<ResourceDTO> response = controller.update(1L, dto);
+
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+    }
+
+    @Test
+    void testDeleteOk() {
+        doNothing().when(resourceService).deleteById(1L);
+
+        ResponseEntity<Void> response = controller.delete(1L);
+
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+    }
+
+    @Test
+    void testDeleteNotFound() {
+        doThrow(NoSuchElementException.class).when(resourceService).deleteById(1L);
+
+        ResponseEntity<Void> response = controller.delete(1L);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    void testDeleteConflict() {
+        doThrow(ObjectOptimisticLockingFailureException.class).when(resourceService).deleteById(1L);
+
+        ResponseEntity<Void> response = controller.delete(1L);
+
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
     }
 }

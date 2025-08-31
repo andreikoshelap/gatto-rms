@@ -5,6 +5,7 @@ import { GoogleMapsLoaderService } from '../service/google-maps-loader.service';
 import { ResourceService } from '../service/resource.service';
 import {HttpClient} from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
 import { Resource } from '../model/resource.model';
 import { ResourceDialogComponent } from './resource-dialog/resource-dialog.component';
 
@@ -12,6 +13,7 @@ import { ResourceDialogComponent } from './resource-dialog/resource-dialog.compo
   selector: 'app-resource',
   templateUrl: './resource.component.html',
   imports: [
+    MatDialogModule,
     GoogleMap,
     MapMarker,
     NgForOf,

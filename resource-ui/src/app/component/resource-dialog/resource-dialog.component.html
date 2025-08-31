@@ -1,5 +1,5 @@
 <div class="square-dialog">
-  <h2 mat-dialog-title>Manage Characteristics</h2>
+  <h1 mat-dialog-title>Manage Characteristics for {{ data.resource.location.city }}, {{ data.resource.location.streetAddress }}</h1>
   <div mat-dialog-content style="flex: 1; overflow: auto;">
     <div *ngFor="let characteristic of data.resource.characteristics; let i = index">
       <mat-form-field appearance="fill">

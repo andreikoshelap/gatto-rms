@@ -1,15 +1,16 @@
 package com.gatto.rms.controller;
 
 import com.gatto.rms.dto.ResourceDTO;
-import com.gatto.rms.entity.Resource;
-import com.gatto.rms.mapper.ResourceMapper;
-import com.gatto.rms.repository.ResourceRepository;
+import com.gatto.rms.service.ResourceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
@@ -17,73 +18,60 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class ResourceController {
-    private final ResourceRepository repository;
-
+    private final ResourceService resourceService;
 
     @PostMapping
-    public Resource create(@RequestBody Resource resource) {
-        return repository.save(resource);
+    public ResponseEntity<ResourceDTO> create(@RequestBody ResourceDTO resourceDTO) {
+        ResourceDTO saved = resourceService.save(resourceDTO.getId(), resourceDTO);
+        return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
-
 
     @GetMapping
     public List<ResourceDTO> all() {
-        return repository.findAll().stream()
-                .map(ResourceMapper::toDTO)
-                .toList();
+        return resourceService.getAllResources();
     }
-
 
     @GetMapping("/{id}")
-    public Resource get(@PathVariable("id") Long id) {
+    public ResponseEntity<ResourceDTO> get(@PathVariable("id") Long id) {
         try {
-            return repository.findById(id).orElseThrow();
-        } catch ( ObjectOptimisticLockingFailureException e) {
+            ResourceDTO resource = resourceService.findById(id).orElseThrow();
+            return ResponseEntity.ok(resource);
+        } catch (NoSuchElementException e) {
+            log.error("Resource not found with ID: {}", id, e);
+            return ResponseEntity.notFound().build();
+        } catch (ObjectOptimisticLockingFailureException e) {
             log.error("Optimistic locking failure while retrieving resource with ID: {}", id, e);
-            throw new RuntimeException("The resource was updated or deleted by another transaction. Please try again.");
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
     }
-
 
     @PutMapping("/{id}")
-    public Resource update(@PathVariable("id") Long id, @RequestBody Resource updated) {
+    public ResponseEntity<ResourceDTO> update(@PathVariable("id") Long id, @RequestBody ResourceDTO updatedDTO) {
         try {
             log.info("Updating resource with ID: {}", id);
-            Resource existingResource = repository.findById(id).orElseThrow();
-            log.debug("Existing resource: {}", existingResource);
-
-            // Update basic fields
-            existingResource.setType(updated.getType());
-            existingResource.setCountryCode(updated.getCountryCode());
-            existingResource.setLocation(updated.getLocation());
-            log.debug("Updated basic fields: type={}, countryCode={}, location={}", updated.getType(), updated.getCountryCode(), updated.getLocation());
-
-            // Update characteristics
-            existingResource.getCharacteristics().clear();
-            updated.getCharacteristics().forEach(characteristic -> {
-                characteristic.setResource(existingResource);
-                existingResource.getCharacteristics().add(characteristic);
-            });
-            log.debug("Updated characteristics: {}", existingResource.getCharacteristics());
-
-            Resource savedResource = repository.save(existingResource);
+            ResourceDTO savedResource = resourceService.save(id, updatedDTO);
             log.info("Resource updated successfully: {}", savedResource);
-            return savedResource;
+            return ResponseEntity.ok(savedResource);
+        } catch (NoSuchElementException e) {
+            log.error("Resource not found with ID: {}", id, e);
+            return ResponseEntity.notFound().build();
         } catch (ObjectOptimisticLockingFailureException e) {
             log.error("Optimistic locking failure while updating resource with ID: {}", id, e);
-            throw new RuntimeException("The resource was updated or deleted by another transaction. Please try again.");
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
     }
 
-
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         try {
-            Resource resource = repository.findById(id).orElseThrow();
-            repository.delete(resource);
-        } catch (ObjectOptimisticLockingFailureException  e) {
+            resourceService.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } catch (NoSuchElementException e) {
+            log.error("Resource not found with ID: {}", id, e);
+            return ResponseEntity.notFound().build();
+        } catch (ObjectOptimisticLockingFailureException e) {
             log.error("Optimistic locking failure while deleting resource with ID: {}", id, e);
-            throw new RuntimeException("The resource was updated or deleted by another transaction. Please try again.");
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
     }
 }

@@ -55,10 +55,11 @@ export class ResourceDialogComponent {
   save(): void {
     this.resourceService.updateResource(this.data.resource).subscribe({
       next: (updatedResource) => {
-        this.dialogRef.close(updatedResource);
+        this.dialogRef.close(updatedResource); // Close the dialog with the updated resource
       },
       error: (err) => {
         console.error('Failed to update resource:', err);
+        this.dialogRef.close(); // Close the dialog even if there is an error
       }
     });
   }
