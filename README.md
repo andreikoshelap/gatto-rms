@@ -2,6 +2,11 @@
 
 **Gatto RMS** (Resource Management System) is a RESTful service for managing and distributing resources with location and characteristic data. It supports creation, updating, deletion, retrieval, and notification mechanisms via Kafka.
 
+# Common architecture
+
+![UI->Gateway->Kafka Diagram](kafka-gateway.png)
+
+Source: [diagram.drawio](kafka-gateway.drawio)
 ---
 
 ##  Functional Requirements
@@ -71,19 +76,19 @@ Swagger (if enabled): http://localhost:8080/swagger-ui.html
 
 ```bash
 {
-"id": 1,
-"type": "ENERGY",
-"countryCode": "EE",
-"location": {
-"latitude": 59.437,
-"longitude": 24.7535
-},
-"characteristics": [
-{
-"code": "CHARGING_POINT",
-"type": "CONNECTION_POINT_STATUS",
-"value": "active"
-}
-]
+    "id": 1,
+    "type": "METERING_POINT",
+    "countryCode": "EE",
+    "location": {
+        "latitude": 59.436999999999998,
+        "longitude": 24.753499999999999
+    },
+    "characteristics": [
+        {
+            "code": "C20",
+            "type": "CONNECTION_POINT_STATUS",
+            "value": "active"
+        }
+    ]
 }
 ```
