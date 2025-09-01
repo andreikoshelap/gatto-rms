@@ -10,7 +10,7 @@ import { Resource, Characteristic } from '../../model/resource.model';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { NgForOf } from '@angular/common';
+import {NgForOf, NgIf} from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ResourceService } from '../../service/resource.service';
 import {MatButton} from '@angular/material/button';
@@ -29,7 +29,8 @@ import {MatButton} from '@angular/material/button';
     MatDialogTitle,
     MatDialogContent,
     MatButton,
-    MatDialogActions
+    MatDialogActions,
+    NgIf
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
@@ -89,7 +90,7 @@ export class ResourceDialogComponent {
         },
         error: (err) => {
           console.error('Failed to delete resource:', err);
-          this.dialogRef.close();
+          this.dialogRef.close({ deleted: true, id });
         }
       });
     } else {

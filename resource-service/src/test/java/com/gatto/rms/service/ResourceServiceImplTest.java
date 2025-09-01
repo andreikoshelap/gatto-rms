@@ -1,4 +1,3 @@
-
 package com.gatto.rms.service;
 
 import com.gatto.rms.dto.ResourceDTO;
@@ -22,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class ResourceServiceTest {
+class ResourceServiceImplTest {
 
     @Mock
     private ResourceRepository repository;
@@ -34,7 +33,7 @@ class ResourceServiceTest {
     private ResourceKafkaPublisher publisher;
 
     @InjectMocks
-    private ResourceService service;
+    private ResourceServiceImpl service;
 
     @BeforeEach
     void setUp() {
@@ -69,11 +68,17 @@ class ResourceServiceTest {
 
     @Test
     void deleteById_whenExists_deletes() {
+        Resource resource = new Resource();
+
         when(repository.existsById(1L)).thenReturn(true);
+        when(repository.findById(1L)).thenReturn(Optional.of(resource));
+
+        ResourceDTO dto = mappingService.toDTO(resource);
 
         service.deleteById(1L);
 
         verify(repository).deleteById(1L);
+        verify(publisher).publishDelete(dto);
     }
 
     @Test
@@ -98,7 +103,7 @@ class ResourceServiceTest {
         ResourceDTO result = service.save(null, dto);
 
         assertThat(result).isEqualTo(savedDto);
-        verify(publisher).publish(saved);
+        verify(publisher).publishCreate(result);
     }
 
     @Test
@@ -125,5 +130,6 @@ class ResourceServiceTest {
 
         assertThat(result).isEqualTo(updatedDto);
         verify(repository).save(existing);
+        verify(publisher).publishUpdate(result);
     }
 }
