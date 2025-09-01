@@ -42,7 +42,7 @@ public class ResourceServiceImpl implements ResourceService {
         Resource resource = repository.findById(id).orElseThrow();
         ResourceDTO dto = mappingService.toDTO(resource);
         repository.deleteById(id);
-        publisher.publishDelete(dto); // публикуем полную информацию о ресурсе
+        publisher.publishDelete(dto); // Publish delete event after successful deletion
     }
 
     @Override
