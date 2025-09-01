@@ -28,4 +28,8 @@ export class ResourceService {
   updateResource(resource: Resource): Observable<Resource> {
     return this.http.put<Resource>(`${this.apiUrl}/${resource.id}`, resource);
   }
+
+  createResource(resource: Resource): Observable<Resource> {
+    return this.http.post<Resource>(this.apiUrl, resource);
+  }
 }

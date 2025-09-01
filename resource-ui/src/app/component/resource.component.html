@@ -4,6 +4,7 @@
   width="100%"
   [center]="center"
   [zoom]="zoom"
+  (mapDblclick)="onMapDblClick($event)"
 >
   <map-marker
     *ngFor="let marker of markers"

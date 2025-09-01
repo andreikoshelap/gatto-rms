@@ -36,22 +36,72 @@ export class ResourceComponent implements OnInit {
     private dialog: MatDialog
   ) {}
 
-  openResourceDialog(resource: Resource): void {
+  openResourceDialog(resource: Resource, isNew: boolean = false): void {
     const dialogRef = this.dialog.open(ResourceDialogComponent, {
       width: '400px',
-      data: { resource }
+      data: { resource, isNew }
     });
 
-    dialogRef.afterClosed().subscribe((result: Resource | undefined) => {
+    dialogRef.afterClosed().subscribe((result: any) => {
       if (result) {
-        this.save(result);
+        if (result.deleted) {
+          this.deleteResource(result.id);
+        } else if (isNew) {
+          this.create(result);
+        } else {
+          this.save(result);
+        }
       }
     });
+  }
+
+  onMapDblClick(event: google.maps.MapMouseEvent): void {
+    if (event.latLng) {
+      const newResource: Resource = {
+        id: undefined,
+        type: '',
+        countryCode: '',
+        location: {
+          latitude: event.latLng.lat(),
+          longitude: event.latLng.lng(),
+          city: '',
+          streetAddress: '',
+          postalCode: '',
+          countryCode: ''
+        },
+        characteristics: []
+      };
+      this.openResourceDialog(newResource, true);
+    }
+  }
+
+  create(resource: Resource): void {
+    this.http.post<Resource>(`/api/resources`, resource)
+      .subscribe((created: Resource) => {
+        this.markers.push({
+          position: {
+            lat: created.location.latitude,
+            lng: created.location.longitude
+          },
+          label: created.type.charAt(0),
+          title: `${created.type} in ${created.location.city} - ${created.characteristics.map(c => c.value).join(', ')}`,
+          resource: created
+        });
+        alert('Resource successfully created.');
+      });
   }
 
   save(resource: Resource): void {
     this.http.put(`/api/resources/${resource.id}`, resource)
       .subscribe(() => alert('Changes saved successfully.'));
+  }
+
+  deleteResource(resourceId: number): void {
+    if (typeof resourceId === 'number') {
+      this.resourceService.delete(resourceId).subscribe(() => {
+        this.markers = this.markers.filter(m => m.resource.id !== resourceId);
+      });
+    }
   }
 
   async ngOnInit(): Promise<void> {

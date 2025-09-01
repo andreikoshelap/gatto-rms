@@ -34,11 +34,14 @@ import {MatButton} from '@angular/material/button';
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ResourceDialogComponent {
+  isNew: boolean;
   constructor(
     public dialogRef: MatDialogRef<ResourceDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { resource: Resource },
+    @Inject(MAT_DIALOG_DATA) public data: { resource: Resource, isNew?: boolean },
     private resourceService: ResourceService
-  ) {}
+  ) {
+    this.isNew = !!data.isNew;
+  }
 
   addCharacteristic(): void {
     this.data.resource.characteristics.push({
@@ -53,15 +56,46 @@ export class ResourceDialogComponent {
   }
 
   save(): void {
-    this.resourceService.updateResource(this.data.resource).subscribe({
-      next: (updatedResource) => {
-        this.dialogRef.close(updatedResource); // Close the dialog with the updated resource
-      },
-      error: (err) => {
-        console.error('Failed to update resource:', err);
-        this.dialogRef.close(); // Close the dialog even if there is an error
-      }
-    });
+    if (this.isNew) {
+      this.resourceService.createResource(this.data.resource).subscribe({
+        next: (createdResource) => {
+          console.log('Resource created:', createdResource);
+          this.dialogRef.close(createdResource || this.data.resource);
+        },
+        error: (err) => {
+          console.error('Failed to create resource:', err);
+          this.dialogRef.close();
+        }
+      });
+    } else {
+      this.resourceService.updateResource(this.data.resource).subscribe({
+        next: (updatedResource) => {
+          this.dialogRef.close(updatedResource);
+        },
+        error: (err) => {
+          console.error('Failed to update resource:', err);
+          this.dialogRef.close();
+        }
+      });
+    }
+  }
+
+  deleteResource(): void {
+    const id = this.data.resource.id;
+    if (typeof id === 'number') {
+      this.resourceService.delete(id).subscribe({
+        next: () => {
+          this.dialogRef.close({ deleted: true, id });
+        },
+        error: (err) => {
+          console.error('Failed to delete resource:', err);
+          this.dialogRef.close();
+        }
+      });
+    } else {
+      console.error('Resource id is undefined, cannot delete');
+      this.dialogRef.close();
+    }
   }
 
   cancel(): void {
