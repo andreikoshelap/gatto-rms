@@ -11,6 +11,13 @@
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea/kotlinc.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/compiler.xml
+.idea/inspectionProfiles/Project_Default.xml
+.idea/modules/resource-service
 
 # AWS User-specific
 .idea/**/aws.xml

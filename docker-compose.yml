@@ -9,8 +9,10 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://resource-postgres:5432/postgres
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
     depends_on:
       - resource-postgres
+      - kafka
 
   resource-postgres:
     image: postgres:13
@@ -23,30 +25,46 @@ services:
     volumes:
       - pgdata_resource:/var/lib/postgresql/data
 
-  kafka-app:
+  resource-ui:
     build:
-      context: ./kafka-producer-service
-      dockerfile: kafka-producer.dockerfile
+      context: ./resource-ui
+      dockerfile: resource-ui.dockerfile
     ports:
-      - "8081:8081"
-    environment:
-      - SERVER_PORT=8081
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://kafka-postgres:5432/postgres
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=admin
+      - "4200:4200"
     depends_on:
-      - kafka-postgres
+      - resource-app
 
-  kafka-postgres:
-    image: postgres:13
-    ports:
-      - "5435:5432"
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=admin
-      - POSTGRES_DB=postgres
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     volumes:
-      - pgdata_kafka:/var/lib/postgresql/data
+      - pgdata_kafka:/var/lib/kafka/data
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - "8080:8080"
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
 
 volumes:
   pgdata_resource:
