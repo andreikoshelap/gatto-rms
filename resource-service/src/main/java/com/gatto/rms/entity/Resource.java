@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.util.List;
 
@@ -28,7 +27,6 @@ public class Resource {
     @OneToOne(cascade = CascadeType.ALL)
     private Location location;
 
-    @ToString.Exclude
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "resource")
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Characteristic> characteristics;
 }

@@ -59,7 +59,6 @@ public class ResourceServiceImpl implements ResourceService {
                     forSave.getCountryCode(), forSave.getLocation());
             existingResource.getCharacteristics().clear();
             forSave.getCharacteristics().forEach(characteristic -> {
-                characteristic.setResource(existingResource);
                 existingResource.getCharacteristics().add(characteristic);
             });
             log.debug("Updated characteristics: {}", existingResource.getCharacteristics());

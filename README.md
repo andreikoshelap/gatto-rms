@@ -32,9 +32,9 @@ Source: [diagram.drawio](kafka-gateway.drawio)
 
 ##  Technical Requirements
 
-- Java 21 or higher
+- Java 21
 - Spring Boot framework
-- Database migration tool (Flyway or Liquibase)
+- Database migration tool: Flyway
 - Docker containerization
 - Comprehensive unit and integration tests to ensure code quality
 

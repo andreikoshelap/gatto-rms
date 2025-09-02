@@ -33,7 +33,6 @@ public class DataInitializer {
         r1.setType(ResourceType.METERING_POINT);
         r1.setCountryCode("EE");
         r1.setLocation(loc1);
-        c1.setResource(r1);
         r1.setCharacteristics(List.of(c1));
 
         // Resource 2: Estonia
@@ -54,7 +53,6 @@ public class DataInitializer {
         r2.setType(ResourceType.CONNECTION_POINT);
         r2.setCountryCode("EE");
         r2.setLocation(loc2);
-        c2.setResource(r2);
         r2.setCharacteristics(List.of(c2));
 
         // Resource 3: Latvia
@@ -75,7 +73,6 @@ public class DataInitializer {
         r3.setType(ResourceType.METERING_POINT);
         r3.setCountryCode("LV");
         r3.setLocation(loc3);
-        c3.setResource(r3);
         r3.setCharacteristics(List.of(c3));
 
         repository.save(r1);
@@ -100,7 +97,6 @@ public class DataInitializer {
         r4.setType(ResourceType.METERING_POINT);
         r4.setCountryCode("EE");
         r4.setLocation(loc4);
-        c4.setResource(r4);
         r4.setCharacteristics(List.of(c4));
         repository.save(r4);
 
@@ -126,8 +122,6 @@ public class DataInitializer {
         r5.setType(ResourceType.CONNECTION_POINT);
         r5.setCountryCode("LV");
         r5.setLocation(loc5);
-        c5a.setResource(r5);
-        c5b.setResource(r5);
         r5.setCharacteristics(List.of(c5a, c5b));
         repository.save(r5);
 
@@ -153,8 +147,6 @@ public class DataInitializer {
         r6.setType(ResourceType.CONNECTION_POINT);
         r6.setCountryCode("EE");
         r6.setLocation(loc6);
-        c6a.setResource(r6);
-        c6b.setResource(r6);
         r6.setCharacteristics(List.of(c6a, c6b));
         repository.save(r6);
     }
