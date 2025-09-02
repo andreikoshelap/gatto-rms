@@ -54,41 +54,57 @@ Source: [diagram.drawio](kafka-gateway.drawio)
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-org/gatto-rms.git
+git clone https://github.com/andreikoshelap/gatto-rms
 cd gatto-rms
 
 ## 2. Build the Project
-mvn clean package
+./gradlew clean build
 
 ### 3. Run with Docker
 
 ```bash
-docker-compose up --build
+docker compose up --d
 ```
 
 ### 4. Access the Application
 Base URL: http://localhost:4200
 
-Swagger (if enabled): http://localhost:8080/swagger-ui.html
+This will open Google map, with predefined 5 resources (nb in environment folder of resource-ui module set 
+file with googleMapsApiKey, this key not commited), By click on existing marker user can open, update or delete 
+resource. By double-click on any place  in map user can create new resource. Any changes with resources goes into 
+postgres db and then on 3 different topic in kafka module: resource-created-events,  resource-updated-events, 
+resource-deleted-events.
 
 ## Example Kafka Message
 
 
 ```bash
 {
-    "id": 1,
-    "type": "METERING_POINT",
-    "countryCode": "EE",
-    "location": {
-        "latitude": 59.436999999999998,
-        "longitude": 24.753499999999999
-    },
-    "characteristics": [
-        {
-            "code": "C20",
-            "type": "CONNECTION_POINT_STATUS",
-            "value": "active"
-        }
-    ]
+	"id": 2,
+	"type": "CONNECTION_POINT",
+	"countryCode": "EE",
+	"characteristics": [
+		{
+			"id": 2,
+			"code": "C2",
+			"type": "CONSUMPTION_TYPE",
+			"value": "medium"
+		},
+		{
+			"id": 9,
+			"code": "C20",
+			"type": "CHARGING_POINT",
+			"value": "low"
+		}
+	],
+	"location": {
+		"id": 2,
+		"streetAddress": "Harju 10",
+		"city": "Tartu",
+		"postalCode": "51007",
+		"countryCode": "EE",
+		"latitude": 58.3776,
+		"longitude": 26.729
+	}
 }
 ```
