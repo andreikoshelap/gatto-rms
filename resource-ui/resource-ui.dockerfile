@@ -7,13 +7,12 @@ COPY package*.json ./
 RUN npm install
 
 COPY . .
-RUN npm run build --prod
+RUN npm run build -- --configuration production
 
 # Use nginx to serve static files
 FROM nginx:alpine
 
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=build /app/dist/resource-ui/browser /usr/share/nginx/html
 
 EXPOSE 4200
-
 CMD ["nginx", "-g", "daemon off;"]

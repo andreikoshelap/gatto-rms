@@ -4,9 +4,8 @@ services:
       context: .
       dockerfile: resource-service.dockerfile
     ports:
-      - "8080:8080"
+      - "8085:8085"
     environment:
-      - SERVER_PORT=8081
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/postgres
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=admin

@@ -1,7 +1,7 @@
 plugins {
-    id("java")
     id("org.springframework.boot") version "3.2.5"
     id("io.spring.dependency-management") version "1.1.5"
+    id("java")
 }
 
 group = "com.gatto"
@@ -40,12 +40,8 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-tasks.withType<Jar> {
-    manifest {
-        attributes["Main-Class"] = "com.gatto.rms.ResourceApplication"
-    }
-}
-
 tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
-    launchScript()
+    manifest {
+        attributes["Start-Class"] = "com.gatto.rms.ResourceApplication"
+    }
 }
