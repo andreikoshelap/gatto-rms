@@ -1,0 +1,52 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36" version="28.1.1">
+  <diagram name="OutboxKafkaIdempotency" id="0">
+    <mxGraphModel dx="1426" dy="863" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="user" value="Resource UI" style="shape=rectangle;fillColor=#dae8fc;strokeColor=#6c8ebf;rounded=1;" parent="1" vertex="1">
+          <mxGeometry x="40" y="100" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="service" value="GatewayAPI" style="shape=rectangle;fillColor=#d5e8d4;strokeColor=#82b366;rounded=1;" parent="1" vertex="1">
+          <mxGeometry x="460" y="100" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="kafka" value="Kafka" style="shape=rectangle;fillColor=#fff2cc;strokeColor=#d6b656;rounded=1;" parent="1" vertex="1">
+          <mxGeometry x="900" y="100" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" value="Add new resource" style="endArrow=block;rounded=0;" parent="1" source="user" target="service" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Fy6cMoiB0MyAQyuO0BeP-1" value="update exising resource" style="endArrow=block;rounded=0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="160" y="140" as="sourcePoint" />
+            <mxPoint x="460" y="140" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Fy6cMoiB0MyAQyuO0BeP-2" value="delete exising resource" style="endArrow=block;rounded=0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="160" y="150" as="sourcePoint" />
+            <mxPoint x="460" y="150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Fy6cMoiB0MyAQyuO0BeP-3" value="delete exising resource" style="endArrow=block;rounded=0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="139.5" as="sourcePoint" />
+            <mxPoint x="900" y="139.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Fy6cMoiB0MyAQyuO0BeP-4" value="update exising resource" style="endArrow=block;rounded=0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="129.5" as="sourcePoint" />
+            <mxPoint x="900" y="129.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Fy6cMoiB0MyAQyuO0BeP-5" value="Add new resource" style="endArrow=block;rounded=0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="119.5" as="sourcePoint" />
+            <mxPoint x="900" y="119.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
