@@ -27,6 +27,6 @@ public class Resource {
     @OneToOne(cascade = CascadeType.ALL)
     private Location location;
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Characteristic> characteristics;
 }

@@ -32,7 +32,7 @@ public class ResourceMapper {
         if (updatedDTO.getCharacteristics() != null) {
             List<Characteristic> characteristics = updatedDTO.getCharacteristics().stream().map(dto -> {
                 Characteristic c = new Characteristic();
-                c.setId(dto.getId());
+                c.setId(null);
                 c.setCode(dto.getCode());
                 if (dto.getType() != null) {
                     c.setType(com.gatto.rms.entity.CharacteristicType.valueOf(dto.getType()));
