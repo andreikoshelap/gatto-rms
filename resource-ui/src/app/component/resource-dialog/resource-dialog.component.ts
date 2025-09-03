@@ -41,7 +41,7 @@ export class ResourceDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: { resource: Resource, isNew?: boolean },
     private resourceService: ResourceService
   ) {
-    this.isNew = !!data.isNew;
+    this.isNew = !data.resource.id;
   }
 
   addCharacteristic(): void {
@@ -58,6 +58,7 @@ export class ResourceDialogComponent {
 
   save(): void {
     if (this.isNew) {
+      console.log('Creating resource with id:', this.data.resource.id);
       this.resourceService.createResource(this.data.resource).subscribe({
         next: (createdResource) => {
           console.log('Resource created:', createdResource);
@@ -69,6 +70,7 @@ export class ResourceDialogComponent {
         }
       });
     } else {
+      console.log('update resource with id:', this.data.resource.id);
       this.resourceService.updateResource(this.data.resource).subscribe({
         next: (updatedResource) => {
           this.dialogRef.close(updatedResource);

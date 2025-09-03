@@ -66,7 +66,22 @@ public class ResourceServiceImpl implements ResourceService {
             resultDTO = mappingService.toDTO(saved);
             publisher.publishUpdate(resultDTO);
         } else {
+            log.debug("Creating new resource with type={}, countryCode={}, location={}",
+                    forSave.getType(), forSave.getCountryCode(), forSave.getLocation());
+
+            if (forSave.getCharacteristics() != null && !forSave.getCharacteristics().isEmpty()) {
+                forSave.getCharacteristics().forEach(c ->
+                        log.debug("New characteristic: code={}, type={}, value={}",
+                                c.getCode(), c.getType(), c.getValue())
+                );
+            } else {
+                log.debug("No characteristics provided for new resource");
+            }
+
             Resource saved = repository.save(forSave);
+            log.debug("Resource saved with ID={}, total characteristics={}",
+                    saved.getId(), saved.getCharacteristics() != null ? saved.getCharacteristics().size() : 0);
+
             resultDTO = mappingService.toDTO(saved);
             publisher.publishCreate(resultDTO);
         }

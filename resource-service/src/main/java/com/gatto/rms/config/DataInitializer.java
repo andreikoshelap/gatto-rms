@@ -34,6 +34,7 @@ public class DataInitializer {
         r1.setCountryCode("EE");
         r1.setLocation(loc1);
         r1.setCharacteristics(List.of(c1));
+        r1.setVersion(0L);
 
         // Resource 2: Estonia
         Location loc2 = new Location();
@@ -54,6 +55,7 @@ public class DataInitializer {
         r2.setCountryCode("EE");
         r2.setLocation(loc2);
         r2.setCharacteristics(List.of(c2));
+        r2.setVersion(0L);
 
         // Resource 3: Latvia
         Location loc3 = new Location();
@@ -74,6 +76,7 @@ public class DataInitializer {
         r3.setCountryCode("LV");
         r3.setLocation(loc3);
         r3.setCharacteristics(List.of(c3));
+        r3.setVersion(0L);
 
         repository.save(r1);
         repository.save(r2);
@@ -98,6 +101,8 @@ public class DataInitializer {
         r4.setCountryCode("EE");
         r4.setLocation(loc4);
         r4.setCharacteristics(List.of(c4));
+        r4.setVersion(0L);
+
         repository.save(r4);
 
         // Resource 5: Latvia, 2 CONNECTION_POINT_STATUS characteristics
@@ -123,6 +128,8 @@ public class DataInitializer {
         r5.setCountryCode("LV");
         r5.setLocation(loc5);
         r5.setCharacteristics(List.of(c5a, c5b));
+        r5.setVersion(0L);
+
         repository.save(r5);
 
         // Resource 6: Estonia, 2 CONNECTION_POINT_STATUS characteristics
@@ -148,6 +155,8 @@ public class DataInitializer {
         r6.setCountryCode("EE");
         r6.setLocation(loc6);
         r6.setCharacteristics(List.of(c6a, c6b));
+        r6.setVersion(0L);
+
         repository.save(r6);
     }
 }

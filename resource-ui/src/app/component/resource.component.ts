@@ -8,6 +8,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatDialogModule } from '@angular/material/dialog';
 import { Resource } from '../model/resource.model';
 import { ResourceDialogComponent } from './resource-dialog/resource-dialog.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
 
 @Component({
   selector: 'app-resource',
@@ -26,28 +28,33 @@ export class ResourceComponent implements OnInit {
   markers: any[] = [];
   zoom = 7;
   mapReady = false;
-  characteristicTypes = ['CONSUMPTION_TYPE', 'CHARGING_POINT', 'CONNECTION_POINT_STATUS'] as const;
 
 
   constructor(
     private googleMapsLoader: GoogleMapsLoaderService,
     private resourceService: ResourceService,
     private http: HttpClient,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {}
 
   openResourceDialog(resource: Resource, isNew: boolean = false): void {
     const dialogRef = this.dialog.open(ResourceDialogComponent, {
       width: '400px',
-      data: { resource, isNew }
+      data: {
+        resource: resource ?? this.getEmptyResource(),
+        isNew: !resource
+      }
     });
 
     dialogRef.afterClosed().subscribe((result: any) => {
       if (result) {
         if (result.deleted) {
           this.deleteResource(result.id);
+          this.refreshResources();
         } else if (isNew) {
           this.create(result);
+          this.refreshResources();
         } else {
           this.save(result);
         }
@@ -87,7 +94,7 @@ export class ResourceComponent implements OnInit {
           title: `${created.type} in ${created.location.city} - ${created.characteristics.map(c => c.value).join(', ')}`,
           resource: created
         });
-        alert('Resource successfully created.');
+        this.snackBar.open('Resource successfully created.', 'Close', { duration: 3000 });
       });
   }
 
@@ -97,11 +104,9 @@ export class ResourceComponent implements OnInit {
   }
 
   deleteResource(resourceId: number): void {
-    if (typeof resourceId === 'number') {
-      this.resourceService.delete(resourceId).subscribe(() => {
-        this.markers = this.markers.filter(m => m.resource.id !== resourceId);
-      });
-    }
+    this.resourceService.delete(resourceId).subscribe(() => {
+      this.markers = this.markers.filter(m => m.resource.id !== resourceId);
+    });
   }
 
   async ngOnInit(): Promise<void> {
@@ -129,15 +134,36 @@ export class ResourceComponent implements OnInit {
       console.error('Google Maps failed to load', error);
     }
   }
-  addCharacteristic(resource: Resource): void {
-    resource.characteristics.push({
-      code: '',
-      type: 'CONSUMPTION_TYPE',
-      value: ''
+
+  getEmptyResource(): Resource {
+    return {
+      id: undefined,
+      type: '',
+      countryCode: '',
+      location: {
+        latitude: 0,
+        longitude: 0,
+        city: '',
+        streetAddress: '',
+        postalCode: '',
+        countryCode: ''
+      },
+      characteristics: []
+    };
+  }
+
+  refreshResources(): void {
+    this.resourceService.getAll().subscribe(resources => {
+      this.markers = resources.map(resource => ({
+        position: {
+          lat: resource.location.latitude,
+          lng: resource.location.longitude
+        },
+        label: resource.type.charAt(0),
+        title: `${resource.type} in ${resource.location.city} - ${resource.characteristics.map(c => c.value).join(', ')}`,
+        resource
+      }));
     });
   }
 
-  removeCharacteristic(resource: Resource, index: number): void {
-    resource.characteristics.splice(index, 1);
-  }
 }

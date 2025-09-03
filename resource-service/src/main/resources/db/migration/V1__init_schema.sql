@@ -10,6 +10,7 @@ CREATE TABLE location (
 
 CREATE TABLE resource (
                           id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+                          version BIGINT DEFAULT 0,
                           type VARCHAR(50) NOT NULL,
                           country_code VARCHAR(2) NOT NULL,
                           location_id BIGINT UNIQUE NOT NULL,

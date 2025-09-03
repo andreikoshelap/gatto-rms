@@ -1,10 +1,7 @@
 package com.gatto.rms.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -15,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Resource {
+
     @Id
     @GeneratedValue
     private Long id;
@@ -28,5 +26,9 @@ public class Resource {
     private Location location;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "resource_id")
     private List<Characteristic> characteristics;
+
+    @Version
+    private Long version;
 }
