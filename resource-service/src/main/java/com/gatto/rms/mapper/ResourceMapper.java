@@ -67,7 +67,7 @@ public class ResourceMapper {
                 .build();
     }
 
-    public LocationDTO toLocationDTO(Location location) {
+    private LocationDTO toLocationDTO(Location location) {
         if (location == null) return null;
         return LocationDTO.builder()
                 .id(location.getId())
@@ -80,7 +80,7 @@ public class ResourceMapper {
                 .build();
     }
 
-    public CharacteristicDTO toCharacteristicDTO(Characteristic c) {
+    private CharacteristicDTO toCharacteristicDTO(Characteristic c) {
         if (c == null) return null;
         return CharacteristicDTO.builder()
                 .id(c.getId())
@@ -90,7 +90,7 @@ public class ResourceMapper {
                 .build();
     }
 
-    public List<CharacteristicDTO> toCharacteristicDTOList(List<Characteristic> list) {
+    private List<CharacteristicDTO> toCharacteristicDTOList(List<Characteristic> list) {
         if (list == null) return null;
         return list.stream().map(this::toCharacteristicDTO).collect(Collectors.toList());
     }
