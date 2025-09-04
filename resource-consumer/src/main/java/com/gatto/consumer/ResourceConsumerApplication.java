@@ -1,0 +1,11 @@
+package com.gatto.consumer;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class ResourceConsumerApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(ResourceConsumerApplication.class, args);
+    }
+}

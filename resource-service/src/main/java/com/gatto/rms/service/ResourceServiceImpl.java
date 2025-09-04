@@ -4,7 +4,7 @@ import com.gatto.rms.dto.ResourceDTO;
 import com.gatto.rms.entity.Resource;
 import com.gatto.rms.error.ResourceDoesNotExistException;
 import com.gatto.rms.mapper.ResourceMapper;
-import com.gatto.rms.publisher.ResourceKafkaPublisher;
+import com.gatto.rms.publisher.RestPublisherClient;
 import com.gatto.rms.repository.ResourceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,8 @@ import java.util.stream.Collectors;
 public class ResourceServiceImpl implements ResourceService {
     private final ResourceRepository repository;
     private final ResourceMapper mappingService;
-    private final ResourceKafkaPublisher publisher;
+    private final RestPublisherClient restPublisherClient;
+
 
     @Override
     public List<ResourceDTO> getAllResources() {
@@ -42,7 +43,7 @@ public class ResourceServiceImpl implements ResourceService {
         Resource resource = repository.findById(id).orElseThrow();
         ResourceDTO dto = mappingService.toDTO(resource);
         repository.deleteById(id);
-        publisher.publishDelete(dto); // Publish delete event after successful deletion
+        restPublisherClient.publishDelete(dto);
     }
 
     @Override
@@ -58,13 +59,12 @@ public class ResourceServiceImpl implements ResourceService {
             log.debug("Updated basic fields: type={}, countryCode={}, location={}", forSave.getType(),
                     forSave.getCountryCode(), forSave.getLocation());
             existingResource.getCharacteristics().clear();
-            forSave.getCharacteristics().forEach(characteristic -> {
-                existingResource.getCharacteristics().add(characteristic);
-            });
+            forSave.getCharacteristics().forEach(characteristic ->
+                    existingResource.getCharacteristics().add(characteristic));
             log.debug("Updated characteristics: {}", existingResource.getCharacteristics());
             Resource saved = repository.save(existingResource);
             resultDTO = mappingService.toDTO(saved);
-            publisher.publishUpdate(resultDTO);
+            restPublisherClient.publishUpdate(resultDTO);
         } else {
             log.debug("Creating new resource with type={}, countryCode={}, location={}",
                     forSave.getType(), forSave.getCountryCode(), forSave.getLocation());
@@ -83,7 +83,7 @@ public class ResourceServiceImpl implements ResourceService {
                     saved.getId(), saved.getCharacteristics() != null ? saved.getCharacteristics().size() : 0);
 
             resultDTO = mappingService.toDTO(saved);
-            publisher.publishCreate(resultDTO);
+            restPublisherClient.publishCreate(resultDTO);
         }
         return resultDTO;
     }

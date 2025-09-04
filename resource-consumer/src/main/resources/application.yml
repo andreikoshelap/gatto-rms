@@ -1,0 +1,13 @@
+server:
+  port: 8087
+
+spring:
+  application:
+    name: resource-consumer
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: resource-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
