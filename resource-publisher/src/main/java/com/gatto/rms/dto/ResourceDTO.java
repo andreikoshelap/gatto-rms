@@ -1,21 +1,22 @@
-package com.gatto.publisher.dto;
+package com.gatto.rms.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LocationDTO {
+public class ResourceDTO {
     private Long id;
-    private String streetAddress;
-    private String city;
-    private String postalCode;
+    private String type;
     private String countryCode;
-    private double latitude;
-    private double longitude;
+    private List<CharacteristicDTO> characteristics;
+    private LocationDTO location;
+    private Long version;
 }
 

@@ -4,7 +4,7 @@ import com.gatto.rms.dto.ResourceDTO;
 import com.gatto.rms.entity.Resource;
 import com.gatto.rms.error.ResourceDoesNotExistException;
 import com.gatto.rms.mapper.ResourceMapper;
-import com.gatto.rms.publisher.ResourceKafkaPublisher;
+import com.gatto.rms.publisher.RestPublisherClient;
 import com.gatto.rms.repository.ResourceRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ class ResourceServiceImplTest {
     private ResourceMapper mappingService;
 
     @Mock
-    private ResourceKafkaPublisher publisher;
+    private RestPublisherClient publisher;
 
     @InjectMocks
     private ResourceServiceImpl service;

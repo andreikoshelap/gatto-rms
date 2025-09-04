@@ -1,4 +1,4 @@
-package com.gatto.publisher.service;
+package com.gatto.rms.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

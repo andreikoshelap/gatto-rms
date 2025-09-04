@@ -1,4 +1,4 @@
-package com.gatto.publisher.dto;
+package com.gatto.rms.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

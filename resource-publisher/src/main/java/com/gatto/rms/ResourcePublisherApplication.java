@@ -1,4 +1,4 @@
-package com.gatto.publisher;
+package com.gatto.rms;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
