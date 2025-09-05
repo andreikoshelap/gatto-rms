@@ -44,7 +44,7 @@ class ResourceServiceImplTest {
     @Test
     void getAllResources_returnsMappedList() {
         Resource resource = new Resource();
-        ResourceView dto = ResourceView.builder()
+        ResourceView view = ResourceView.builder()
                 .id(1L)
                 .type("METERING_POINT")
                 .countryCode("EE")
@@ -52,17 +52,17 @@ class ResourceServiceImplTest {
                 .build();
 
         when(repository.findAll()).thenReturn(List.of(resource));
-        when(mappingService.toDTO(resource)).thenReturn(dto);
+        when(mappingService.toView(resource)).thenReturn(view);
 
         List<ResourceView> result = service.getAllResources();
 
-        assertThat(result).containsExactly(dto);
+        assertThat(result).containsExactly(view);
     }
 
     @Test
     void findById_returnsMappedDTO() {
         Resource resource = new Resource();
-        ResourceView dto = ResourceView.builder()
+        ResourceView view = ResourceView.builder()
                 .id(1L)
                 .type("METERING_POINT")
                 .countryCode("EE")
@@ -70,11 +70,11 @@ class ResourceServiceImplTest {
                 .build();
 
         when(repository.findById(1L)).thenReturn(Optional.of(resource));
-        when(mappingService.toDTO(resource)).thenReturn(dto);
+        when(mappingService.toView(resource)).thenReturn(view);
 
         Optional<ResourceView> result = service.findById(1L);
 
-        assertThat(result).contains(dto);
+        assertThat(result).contains(view);
     }
 
     @Test
@@ -84,12 +84,12 @@ class ResourceServiceImplTest {
         when(repository.existsById(1L)).thenReturn(true);
         when(repository.findById(1L)).thenReturn(Optional.of(resource));
 
-        ResourceView dto = mappingService.toDTO(resource);
+        ResourceView view = mappingService.toView(resource);
 
         service.deleteById(1L);
 
         verify(repository).deleteById(1L);
-        verify(publisher).publishDelete(dto);
+        verify(publisher).publishDelete(view);
     }
 
     @Test
@@ -102,7 +102,7 @@ class ResourceServiceImplTest {
 
     @Test
     void save_whenIdIsNull_savesNewAndPublishes() {
-        ResourceView dto = ResourceView.builder()
+        ResourceView view = ResourceView.builder()
                 .id(1L)
                 .type("METERING_POINT")
                 .countryCode("EE")
@@ -117,11 +117,11 @@ class ResourceServiceImplTest {
                 .location(LocationView.builder().city("Tallinn").build())
                 .build();
 
-        when(mappingService.toEntity(dto)).thenReturn(entity);
+        when(mappingService.toEntity(view)).thenReturn(entity);
         when(repository.save(entity)).thenReturn(saved);
-        when(mappingService.toDTO(saved)).thenReturn(savedDto);
+        when(mappingService.toView(saved)).thenReturn(savedDto);
 
-        ResourceView result = service.save(null, dto);
+        ResourceView result = service.save(null, view);
 
         assertThat(result).isEqualTo(savedDto);
         verify(publisher).publishCreate(result);
@@ -129,7 +129,7 @@ class ResourceServiceImplTest {
 
     @Test
     void save_whenIdExists_updatesResource() {
-        ResourceView dto = ResourceView.builder()
+        ResourceView view = ResourceView.builder()
                 .id(1L)
                 .type("METERING_POINT")
                 .countryCode("EE")
@@ -152,11 +152,11 @@ class ResourceServiceImplTest {
 
         when(repository.existsById(1L)).thenReturn(true);
         when(repository.findById(1L)).thenReturn(Optional.of(existing));
-        when(mappingService.toEntity(dto)).thenReturn(toSave);
+        when(mappingService.toEntity(view)).thenReturn(toSave);
         when(repository.save(existing)).thenReturn(updated);
-        when(mappingService.toDTO(updated)).thenReturn(updatedDto);
+        when(mappingService.toView(updated)).thenReturn(updatedDto);
 
-        ResourceView result = service.save(1L, dto);
+        ResourceView result = service.save(1L, view);
 
         assertThat(result).isEqualTo(updatedDto);
         verify(repository).save(existing);
