@@ -51,7 +51,7 @@ export class ResourceComponent implements OnInit {
       if (result) {
         if (result.deleted) {
           this.deleteResource(result.id);
-          this.refreshResources();
+          // this.refreshResources();
         } else if (isNew) {
           this.create(result);
           this.refreshResources();

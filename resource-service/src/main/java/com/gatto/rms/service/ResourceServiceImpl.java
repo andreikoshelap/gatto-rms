@@ -41,8 +41,9 @@ public class ResourceServiceImpl implements ResourceService {
             throw new ResourceDoesNotExistException();
         }
         Resource resource = repository.findById(id).orElseThrow();
-        ResourceDTO dto = mappingService.toDTO(resource);
+        log.debug("Will delete resource: {}", resource);
         repository.deleteById(id);
+        ResourceDTO dto = mappingService.toDTO(resource);
         restPublisherClient.publishDelete(dto);
     }
 

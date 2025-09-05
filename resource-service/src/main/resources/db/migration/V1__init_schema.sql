@@ -1,11 +1,19 @@
 -- Schema initialization for Resource Management App
 
+-- Drop existing tables (in correct order to respect FK constraints)
+DROP TABLE IF EXISTS characteristic;
+DROP TABLE IF EXISTS resource;
+DROP TABLE IF EXISTS location;
+
+-- Create tables
 CREATE TABLE location (
                           id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
                           street_address VARCHAR(255) NOT NULL,
                           city VARCHAR(100) NOT NULL,
                           postal_code VARCHAR(20) NOT NULL,
-                          country_code VARCHAR(2) NOT NULL
+                          country_code VARCHAR(2) NOT NULL,
+                          latitude DOUBLE PRECISION NOT NULL,
+                          longitude DOUBLE PRECISION NOT NULL
 );
 
 CREATE TABLE resource (
@@ -26,6 +34,7 @@ CREATE TABLE characteristic (
                                 CONSTRAINT fk_resource FOREIGN KEY (resource_id) REFERENCES resource(id) ON DELETE CASCADE
 );
 
+-- Indexes
 CREATE INDEX idx_characteristic_code ON characteristic(code);
 CREATE INDEX idx_resource_type ON resource(type);
 CREATE INDEX idx_location_country ON location(country_code);

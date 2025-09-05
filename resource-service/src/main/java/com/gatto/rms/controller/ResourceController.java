@@ -64,6 +64,7 @@ public class ResourceController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         try {
+            log.error("Resource ID or delete : {}", id);
             resourceService.deleteById(id);
             return ResponseEntity.noContent().build();
         } catch (NoSuchElementException e) {
