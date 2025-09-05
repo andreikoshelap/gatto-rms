@@ -1,73 +1,182 @@
 package com.gatto.rms.config;
 
-import com.gatto.rms.entity.*;
+import com.gatto.rms.entity.Characteristic;
+import com.gatto.rms.entity.CharacteristicType;
+import com.gatto.rms.entity.Location;
+import com.gatto.rms.entity.Resource;
+import com.gatto.rms.entity.ResourceType;
 import com.gatto.rms.repository.ResourceRepository;
+import jakarta.annotation.PostConstruct;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.ArrayList;
 
 @Component
 @RequiredArgsConstructor
-@Slf4j
-public class DataInitializer implements ApplicationListener<ApplicationReadyEvent> {
+public class DataInitializer {
 
     private final ResourceRepository repository;
 
-    @Override
-    public void onApplicationEvent(ApplicationReadyEvent event) {
-        log.info("Initializing sample data...");
+    @PostConstruct
+    @Transactional
+    public void init() {
+        // ===== Resource 1: Estonia =====
+        Location loc1 = new Location();
+        loc1.setStreetAddress("Viru väljak 4");
+        loc1.setCity("Tallinn");
+        loc1.setPostalCode("10111");
+        loc1.setCountryCode("EE");
+        loc1.setLatitude(59.4370);
+        loc1.setLongitude(24.7536);
 
-        Resource r1 = createResource("Viru väljak 4", "Tallinn", "10111", "EE",
-                59.4370, 24.7536, ResourceType.METERING_POINT,
-                new Location(1L, "Viru väljak 4", "Tallinn", "10111", "EE", 59.4370, 24.7536),
-                new Characteristic(1L,"C1", CharacteristicType.CONSUMPTION_TYPE, "high"));
+        Characteristic c1 = new Characteristic();
+        c1.setCode("C1");
+        c1.setType(CharacteristicType.CONSUMPTION_TYPE);
+        c1.setValue("high");
 
-        Resource r2 = createResource("Harju 10", "Tartu", "51007", "EE",
-                58.3776, 26.7290, ResourceType.CONNECTION_POINT,
-                new Location(2L, "Harju 10", "Tartu", "51007", "EE", 58.3776, 26.7290),
-                new Characteristic(2L,"C2", CharacteristicType.CONSUMPTION_TYPE, "medium"));
+        Resource r1 = new Resource();
+        r1.setType(ResourceType.METERING_POINT);
+        r1.setCountryCode("EE");
+        r1.setLocation(loc1);
+        link(r1, c1);
 
-        Resource r3 = createResource("Brivibas iela 20", "Riga", "LV-1011", "LV",
-                56.9496, 24.1052, ResourceType.METERING_POINT,
-                new Location(3L, "Brivibas iela 20", "Riga", "LV-1011", "LV", 56.9496, 24.1052),
-                new Characteristic(3L, "C3", CharacteristicType.CONSUMPTION_TYPE, "low"));
+        repository.save(r1);
 
-        Resource r4 = createResource("Pärnu mnt 22", "Tallinn", "10141", "EE",
-                59.4315, 24.7468, ResourceType.METERING_POINT,
-                new Location(4L, "Pärnu mnt 22", "Tallinn", "10141", "EE", 59.4315, 24.7468),
-                new Characteristic(4L, "C4", CharacteristicType.CHARGING_POINT, "fast"));
+        // ===== Resource 2: Estonia =====
+        Location loc2 = new Location();
+        loc2.setStreetAddress("Harju 10");
+        loc2.setCity("Tartu");
+        loc2.setPostalCode("51007");
+        loc2.setCountryCode("EE");
+        loc2.setLatitude(58.3776);
+        loc2.setLongitude(26.7290);
 
-        Resource r5 = createResource("Dzirnavu iela 67", "Riga", "LV-1011", "LV",
-                56.9537, 24.1256, ResourceType.CONNECTION_POINT,
-                new Location(5L, "Dzirnavu iela 67", "Riga", "LV-1011", "LV", 56.9537, 24.1256),
-                new Characteristic(5L,"C5A", CharacteristicType.CONNECTION_POINT_STATUS, "active"),
-                new Characteristic(6L,"C5B", CharacteristicType.CONNECTION_POINT_STATUS, "maintenance"));
+        Characteristic c2 = new Characteristic();
+        c2.setCode("C2");
+        c2.setType(CharacteristicType.CONSUMPTION_TYPE);
+        c2.setValue("medium");
 
-        Resource r6 = createResource("Narva mnt 5", "Narva", "21003", "EE",
-                59.3772, 28.1903, ResourceType.CONNECTION_POINT,
-                new Location(6L, "Narva mnt 5", "Narva", "21003", "EE", 59.3772, 28.1903),
-                new Characteristic(7L, "C6A", CharacteristicType.CONNECTION_POINT_STATUS, "inactive"),
-                new Characteristic(8L,"C6B", CharacteristicType.CONNECTION_POINT_STATUS, "pending"));
+        Resource r2 = new Resource();
+        r2.setType(ResourceType.CONNECTION_POINT);
+        r2.setCountryCode("EE");
+        r2.setLocation(loc2);
+        link(r2, c2);
 
-        repository.saveAll(List.of(r1, r2, r3, r4, r5, r6));
-        log.info("Sample data initialized.");
+        repository.save(r2);
+
+        // ===== Resource 3: Latvia =====
+        Location loc3 = new Location();
+        loc3.setStreetAddress("Brivibas iela 20");
+        loc3.setCity("Riga");
+        loc3.setPostalCode("LV-1011");
+        loc3.setCountryCode("LV");
+        loc3.setLatitude(56.9496);
+        loc3.setLongitude(24.1052);
+
+        Characteristic c3 = new Characteristic();
+        c3.setCode("C3");
+        c3.setType(CharacteristicType.CONSUMPTION_TYPE);
+        c3.setValue("low");
+
+        Resource r3 = new Resource();
+        r3.setType(ResourceType.METERING_POINT);
+        r3.setCountryCode("LV");
+        r3.setLocation(loc3);
+        link(r3, c3);
+
+        repository.save(r3);
+
+        // ===== Resource 4: Charging Point in Estonia =====
+        Location loc4 = new Location();
+        loc4.setStreetAddress("Pärnu mnt 22");
+        loc4.setCity("Tallinn");
+        loc4.setPostalCode("10141");
+        loc4.setCountryCode("EE");
+        loc4.setLatitude(59.4315);
+        loc4.setLongitude(24.7468);
+
+        Characteristic c4 = new Characteristic();
+        c4.setCode("C4");
+        c4.setType(CharacteristicType.CHARGING_POINT);
+        c4.setValue("fast");
+
+        Resource r4 = new Resource();
+        r4.setType(ResourceType.METERING_POINT);
+        r4.setCountryCode("EE");
+        r4.setLocation(loc4);
+        link(r4, c4);
+
+        repository.save(r4);
+
+        // ===== Resource 5: Latvia, 2 CONNECTION_POINT_STATUS characteristics =====
+        Location loc5 = new Location();
+        loc5.setStreetAddress("Dzirnavu iela 67");
+        loc5.setCity("Riga");
+        loc5.setPostalCode("LV-1011");
+        loc5.setCountryCode("LV");
+        loc5.setLatitude(56.9537);
+        loc5.setLongitude(24.1256);
+
+        Characteristic c5a = new Characteristic();
+        c5a.setCode("C5A");
+        c5a.setType(CharacteristicType.CONNECTION_POINT_STATUS);
+        c5a.setValue("active");
+
+        Characteristic c5b = new Characteristic();
+        c5b.setCode("C5B");
+        c5b.setType(CharacteristicType.CONNECTION_POINT_STATUS);
+        c5b.setValue("maintenance");
+
+        Resource r5 = new Resource();
+        r5.setType(ResourceType.CONNECTION_POINT);
+        r5.setCountryCode("LV");
+        r5.setLocation(loc5);
+        link(r5, c5a, c5b);
+
+        repository.save(r5);
+
+        // ===== Resource 6: Estonia, 2 CONNECTION_POINT_STATUS characteristics =====
+        Location loc6 = new Location();
+        loc6.setStreetAddress("Narva mnt 5");
+        loc6.setCity("Narva");
+        loc6.setPostalCode("21003");
+        loc6.setCountryCode("EE");
+        loc6.setLatitude(59.3772);
+        loc6.setLongitude(28.1903);
+
+        Characteristic c6a = new Characteristic();
+        c6a.setCode("C6A");
+        c6a.setType(CharacteristicType.CONNECTION_POINT_STATUS);
+        c6a.setValue("inactive");
+
+        Characteristic c6b = new Characteristic();
+        c6b.setCode("C6B");
+        c6b.setType(CharacteristicType.CONNECTION_POINT_STATUS);
+        c6b.setValue("pending");
+
+        Resource r6 = new Resource();
+        r6.setType(ResourceType.CONNECTION_POINT);
+        r6.setCountryCode("EE");
+        r6.setLocation(loc6);
+        link(r6, c6a, c6b);
+
+        repository.save(r6);
     }
 
-    private Resource createResource(
-            String address, String city, String postalCode, String country,
-            double lat, double lon, ResourceType type, Location location, Characteristic... characteristics
-    ) {
-        Resource resource = new Resource();
-        resource.setType(type);
-        resource.setCountryCode(country);
-        resource.setLocation(location);
-        resource.setCharacteristics(List.of(characteristics));
-        resource.setVersion(0L);
-
-        return resource;
+    /**
+     * Связывает ресурс с характеристиками:
+     *  - проставляет владельца связи на стороне Characteristic (c.setResource(r))
+     *  - добавляет характеристики в коллекцию ресурса, инициализируя её при необходимости
+     */
+    private static void link(Resource r, Characteristic... cs) {
+        if (r.getCharacteristics() == null) {
+            r.setCharacteristics(new ArrayList<>());
+        }
+        for (Characteristic c : cs) {
+            c.setResource(r);                 // владелец связи
+            r.getCharacteristics().add(c);    // обратная сторона
+        }
     }
 }
