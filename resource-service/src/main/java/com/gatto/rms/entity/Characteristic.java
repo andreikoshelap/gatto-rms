@@ -24,6 +24,4 @@ public class Characteristic {
 
     private String value;
 
-    @ManyToOne
-    private Resource resource;
 }
