@@ -29,12 +29,12 @@ public class KafkaPublisherService {
     public void publishUpdatedEvent(String message) {
         String key = UUID.randomUUID().toString();
         logger.info("Publishing update message to Kafka with key {}: {}", key, message);
-        kafkaTemplate.send(UPDATE_TOPIC, message);
+        kafkaTemplate.send(UPDATE_TOPIC, key, message);
     }
 
     public void publishDeletedEvent(String message) {
         String key = UUID.randomUUID().toString();
         logger.info("Publishing deleted message to Kafkawith key {}: {}", key, message);
-        kafkaTemplate.send(DELETE_TOPIC, message);
+        kafkaTemplate.send(DELETE_TOPIC, key, message);
     }
 }

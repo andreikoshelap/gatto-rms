@@ -13,6 +13,5 @@ public class KafkaConsumerService {
     @KafkaListener(topics = "resource-events", groupId = "resource-consumer-group")
     public void consume(String message) {
         logger.info("Received message from Kafka: {}", message);
-        // Можно добавить сохранение в БД, агрегацию и т.д.
     }
 }

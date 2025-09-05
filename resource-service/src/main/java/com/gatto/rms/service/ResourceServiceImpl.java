@@ -1,11 +1,11 @@
 package com.gatto.rms.service;
 
-import com.gatto.rms.dto.ResourceDTO;
 import com.gatto.rms.entity.Resource;
 import com.gatto.rms.error.ResourceDoesNotExistException;
 import com.gatto.rms.mapper.ResourceMapper;
 import com.gatto.rms.publisher.RestPublisherClient;
 import com.gatto.rms.repository.ResourceRepository;
+import com.gatto.rms.view.ResourceView;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,15 +24,15 @@ public class ResourceServiceImpl implements ResourceService {
 
 
     @Override
-    public List<ResourceDTO> getAllResources() {
+    public List<ResourceView> getAllResources() {
         return repository.findAll().stream()
-                .map(mappingService::toDTO)
+                .map(mappingService::toView)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Optional<ResourceDTO> findById(Long id) {
-        return repository.findById(id).map(mappingService::toDTO);
+    public Optional<ResourceView> findById(Long id) {
+        return repository.findById(id).map(mappingService::toView);
     }
 
     @Override
@@ -43,15 +43,15 @@ public class ResourceServiceImpl implements ResourceService {
         Resource resource = repository.findById(id).orElseThrow();
         log.debug("Will delete resource: {}", resource);
         repository.deleteById(id);
-        ResourceDTO dto = mappingService.toDTO(resource);
+        ResourceView dto = mappingService.toView(resource);
         restPublisherClient.publishDelete(dto);
     }
 
     @Override
-    public ResourceDTO save(Long id, ResourceDTO resourceDTO) {
-        Resource forSave = mappingService.toEntity(resourceDTO);
-        ResourceDTO resultDTO;
-        if (resourceDTO.getId() != null && repository.existsById(id)) {
+    public ResourceView save(Long id, ResourceView resourceView) {
+        Resource forSave = mappingService.toEntity(resourceView);
+        ResourceView view;
+        if (resourceView.id() != null && repository.existsById(id)) {
             Resource existingResource = repository.findById(id).orElseThrow();
             log.debug("Existing resource: {}", existingResource);
             existingResource.setType(forSave.getType());
@@ -64,8 +64,8 @@ public class ResourceServiceImpl implements ResourceService {
                     existingResource.getCharacteristics().add(characteristic));
             log.debug("Updated characteristics: {}", existingResource.getCharacteristics());
             Resource saved = repository.save(existingResource);
-            resultDTO = mappingService.toDTO(saved);
-            restPublisherClient.publishUpdate(resultDTO);
+            view = mappingService.toView(saved);
+            restPublisherClient.publishUpdate(view);
         } else {
             log.debug("Creating new resource with type={}, countryCode={}, location={}",
                     forSave.getType(), forSave.getCountryCode(), forSave.getLocation());
@@ -83,9 +83,9 @@ public class ResourceServiceImpl implements ResourceService {
             log.debug("Resource saved with ID={}, total characteristics={}",
                     saved.getId(), saved.getCharacteristics() != null ? saved.getCharacteristics().size() : 0);
 
-            resultDTO = mappingService.toDTO(saved);
-            restPublisherClient.publishCreate(resultDTO);
+            view = mappingService.toView(saved);
+            restPublisherClient.publishCreate(view);
         }
-        return resultDTO;
+        return view;
     }
 }

@@ -1,97 +1,71 @@
 package com.gatto.rms.mapper;
 
-import com.gatto.rms.dto.CharacteristicDTO;
-import com.gatto.rms.dto.LocationDTO;
-import com.gatto.rms.dto.ResourceDTO;
 import com.gatto.rms.entity.Characteristic;
-import com.gatto.rms.entity.Location;
 import com.gatto.rms.entity.Resource;
 import com.gatto.rms.entity.ResourceType;
+import com.gatto.rms.view.ResourceView;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class ResourceMapper {
+    private final LocationMapper locationMapper;
+    private final CharacteristicMapper characteristicMapper;
+    /* ====================== toEntity ====================== */
 
-    public Resource toEntity(ResourceDTO updatedDTO) {
-        if (updatedDTO == null) {
-            return null;
-        }
+    public Resource toEntity(ResourceView view) {
+        if (view == null) return null;
+
         Resource entity = new Resource();
-        entity.setId(updatedDTO.getId());
-        if (updatedDTO.getType() != null) {
-            entity.setType(ResourceType.valueOf(updatedDTO.getType()));
+        entity.setId(view.id());
+        if (view.type() != null) {
+            entity.setType(ResourceType.valueOf(view.type()));
         }
-        entity.setCountryCode(updatedDTO.getCountryCode());
-        if (updatedDTO.getLocation() != null) {
-            Location location = getLocation(updatedDTO);
-            entity.setLocation(location);
+        entity.setCountryCode(view.countryCode());
+
+        if (view.location() != null) {
+            entity.setLocation(locationMapper.toEntity(view.location()));
         }
-        if (updatedDTO.getCharacteristics() != null) {
-            List<Characteristic> characteristics = updatedDTO.getCharacteristics().stream().map(dto -> {
-                Characteristic c = new Characteristic();
-                c.setId(null);
-                c.setCode(dto.getCode());
-                if (dto.getType() != null) {
-                    c.setType(com.gatto.rms.entity.CharacteristicType.valueOf(dto.getType()));
-                }
-                c.setValue(dto.getValue());
-                return c;
-            }).collect(Collectors.toList());
+
+        if (view.characteristics() != null) {
+            List<Characteristic> characteristics = view.characteristics().stream()
+                    .map(characteristicMapper::toEntity)
+                    .collect(Collectors.toList());
+
             entity.setCharacteristics(characteristics);
         }
+
+        if (hasVersion(view)) {
+            entity.setVersion(view.version());
+        }
+
         return entity;
     }
 
-    private static Location getLocation(ResourceDTO updatedDTO) {
-        Location location = new Location();
-        location.setId(updatedDTO.getLocation().getId());
-        location.setStreetAddress(updatedDTO.getLocation().getStreetAddress());
-        location.setCity(updatedDTO.getLocation().getCity());
-        location.setPostalCode(updatedDTO.getLocation().getPostalCode());
-        location.setCountryCode(updatedDTO.getLocation().getCountryCode());
-        location.setLatitude(updatedDTO.getLocation().getLatitude());
-        location.setLongitude(updatedDTO.getLocation().getLongitude());
-        return location;
+    /* ====================== toView ====================== */
+
+    public ResourceView toView(Resource e) {
+        if (e == null) return null;
+        return new ResourceView(
+                e.getId(),
+                e.getType() != null ? e.getType().name() : null,
+                e.getCountryCode(),
+                characteristicMapper.toCharacteristicViewList(e.getCharacteristics()),
+                locationMapper.toView(e.getLocation()),
+                e.getVersion()
+        );
     }
 
-    public ResourceDTO toDTO(Resource resource) {
-        return ResourceDTO.builder()
-                .id(resource.getId())
-                .type(resource.getType() != null ? resource.getType().name() : null)
-                .countryCode(resource.getCountryCode())
-                .location(toLocationDTO(resource.getLocation()))
-                .characteristics(toCharacteristicDTOList(resource.getCharacteristics()))
-                .build();
-    }
-
-    private LocationDTO toLocationDTO(Location location) {
-        if (location == null) return null;
-        return LocationDTO.builder()
-                .id(location.getId())
-                .streetAddress(location.getStreetAddress())
-                .city(location.getCity())
-                .postalCode(location.getPostalCode())
-                .countryCode(location.getCountryCode())
-                .latitude(location.getLatitude())
-                .longitude(location.getLongitude())
-                .build();
-    }
-
-    private CharacteristicDTO toCharacteristicDTO(Characteristic c) {
-        if (c == null) return null;
-        return CharacteristicDTO.builder()
-                .id(c.getId())
-                .code(c.getCode())
-                .type(c.getType() != null ? c.getType().name() : null)
-                .value(c.getValue())
-                .build();
-    }
-
-    private List<CharacteristicDTO> toCharacteristicDTOList(List<Characteristic> list) {
-        if (list == null) return null;
-        return list.stream().map(this::toCharacteristicDTO).collect(Collectors.toList());
+    private boolean hasVersion(ResourceView view) {
+        try {
+            view.version();
+            return true;
+        } catch (Throwable ignore) {
+            return false;
+        }
     }
 }

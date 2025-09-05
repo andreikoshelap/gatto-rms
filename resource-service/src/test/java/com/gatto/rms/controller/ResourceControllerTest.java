@@ -1,7 +1,8 @@
 package com.gatto.rms.controller;
 
-import com.gatto.rms.dto.ResourceDTO;
 import com.gatto.rms.service.ResourceService;
+import com.gatto.rms.view.LocationView;
+import com.gatto.rms.view.ResourceView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -28,12 +29,16 @@ class ResourceControllerTest {
 
     @Test
     void testCreate() {
-        ResourceDTO input = new ResourceDTO();
-        input.setId(1L);
+        ResourceView input =  ResourceView.builder()
+                .id(1L)
+                .type("METERING_POINT")
+                .countryCode("EE")
+                .location(LocationView.builder().city("Tallinn").build())
+                .build();
 
         when(resourceService.save(1L, input)).thenReturn(input);
 
-        ResponseEntity<ResourceDTO> response = controller.create(input);
+        ResponseEntity<ResourceView> response = controller.create(input);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(input, response.getBody());
@@ -41,34 +46,41 @@ class ResourceControllerTest {
 
     @Test
     void testAll() {
-        ResourceDTO dto = new ResourceDTO();
-        dto.setId(1L);
+        ResourceView view = ResourceView.builder()
+                .id(1L)
+                .type("METERING_POINT")
+                .countryCode("EE")
+                .location(LocationView.builder().city("Tallinn").build())
+                .build();
 
-        when(resourceService.getAllResources()).thenReturn(List.of(dto));
+        when(resourceService.getAllResources()).thenReturn(List.of(view));
 
-        List<ResourceDTO> result = controller.all();
+        List<ResourceView> result = controller.all();
         assertEquals(1, result.size());
-        assertEquals(1L, result.get(0).getId());
+        assertEquals(1L, result.getFirst().id());
     }
 
     @Test
     void testGetFound() {
-        ResourceDTO dto = new ResourceDTO();
-        dto.setId(1L);
+        ResourceView view = ResourceView.builder()
+                .id(1L)
+                .type("METERING_POINT")
+                .countryCode("EE")
+                .location(LocationView.builder().city("Tallinn").build())
+                .build();
+        when(resourceService.findById(1L)).thenReturn(Optional.of(view));
 
-        when(resourceService.findById(1L)).thenReturn(Optional.of(dto));
-
-        ResponseEntity<ResourceDTO> response = controller.get(1L);
+        ResponseEntity<ResourceView> response = controller.get(1L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(dto, response.getBody());
+        assertEquals(view, response.getBody());
     }
 
     @Test
     void testGetNotFound() {
         when(resourceService.findById(1L)).thenReturn(Optional.empty());
 
-        ResponseEntity<ResourceDTO> response = controller.get(1L);
+        ResponseEntity<ResourceView> response = controller.get(1L);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
@@ -77,44 +89,56 @@ class ResourceControllerTest {
     void testGetOptimisticLockingFailure() {
         when(resourceService.findById(1L)).thenThrow(new ObjectOptimisticLockingFailureException("Resource", 1L));
 
-        ResponseEntity<ResourceDTO> response = controller.get(1L);
+        ResponseEntity<ResourceView> response = controller.get(1L);
 
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
     }
 
     @Test
     void testUpdateOk() {
-        ResourceDTO dto = new ResourceDTO();
-        dto.setId(1L);
+        ResourceView view = ResourceView.builder()
+                .id(1L)
+                .type("METERING_POINT")
+                .countryCode("EE")
+                .location(LocationView.builder().city("Tallinn").build())
+                .build();
 
-        when(resourceService.save(1L, dto)).thenReturn(dto);
+        when(resourceService.save(1L, view)).thenReturn(view);
 
-        ResponseEntity<ResourceDTO> response = controller.update(1L, dto);
+        ResponseEntity<ResourceView> response = controller.update(1L, view);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(dto, response.getBody());
+        assertEquals(view, response.getBody());
     }
 
     @Test
     void testUpdateNotFound() {
-        ResourceDTO dto = new ResourceDTO();
-        dto.setId(1L);
+        ResourceView view = ResourceView.builder()
+                .id(1L)
+                .type("METERING_POINT")
+                .countryCode("EE")
+                .location(LocationView.builder().city("Tallinn").build())
+                .build();
 
-        when(resourceService.save(1L, dto)).thenThrow(NoSuchElementException.class);
+        when(resourceService.save(1L, view)).thenThrow(NoSuchElementException.class);
 
-        ResponseEntity<ResourceDTO> response = controller.update(1L, dto);
+        ResponseEntity<ResourceView> response = controller.update(1L, view);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
     void testUpdateConflict() {
-        ResourceDTO dto = new ResourceDTO();
-        dto.setId(1L);
+        ResourceView view = ResourceView.builder()
+                .id(1L)
+                .type("METERING_POINT")
+                .countryCode("EE")
+                .location(LocationView.builder().city("Tallinn").build())
+                .build();
 
-        when(resourceService.save(1L, dto)).thenThrow(ObjectOptimisticLockingFailureException.class);
+        when(resourceService.save(1L, view)).thenThrow(ObjectOptimisticLockingFailureException.class);
 
-        ResponseEntity<ResourceDTO> response = controller.update(1L, dto);
+        ResponseEntity<ResourceView> response = controller.update(1L, view);
 
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
     }

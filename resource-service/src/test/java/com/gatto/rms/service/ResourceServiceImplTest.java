@@ -1,11 +1,12 @@
 package com.gatto.rms.service;
 
-import com.gatto.rms.dto.ResourceDTO;
 import com.gatto.rms.entity.Resource;
 import com.gatto.rms.error.ResourceDoesNotExistException;
 import com.gatto.rms.mapper.ResourceMapper;
 import com.gatto.rms.publisher.RestPublisherClient;
 import com.gatto.rms.repository.ResourceRepository;
+import com.gatto.rms.view.LocationView;
+import com.gatto.rms.view.ResourceView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -43,12 +44,17 @@ class ResourceServiceImplTest {
     @Test
     void getAllResources_returnsMappedList() {
         Resource resource = new Resource();
-        ResourceDTO dto = new ResourceDTO();
+        ResourceView dto = ResourceView.builder()
+                .id(1L)
+                .type("METERING_POINT")
+                .countryCode("EE")
+                .location(LocationView.builder().city("Tallinn").build())
+                .build();
 
         when(repository.findAll()).thenReturn(List.of(resource));
         when(mappingService.toDTO(resource)).thenReturn(dto);
 
-        List<ResourceDTO> result = service.getAllResources();
+        List<ResourceView> result = service.getAllResources();
 
         assertThat(result).containsExactly(dto);
     }
@@ -56,12 +62,17 @@ class ResourceServiceImplTest {
     @Test
     void findById_returnsMappedDTO() {
         Resource resource = new Resource();
-        ResourceDTO dto = new ResourceDTO();
+        ResourceView dto = ResourceView.builder()
+                .id(1L)
+                .type("METERING_POINT")
+                .countryCode("EE")
+                .location(LocationView.builder().city("Tallinn").build())
+                .build();
 
         when(repository.findById(1L)).thenReturn(Optional.of(resource));
         when(mappingService.toDTO(resource)).thenReturn(dto);
 
-        Optional<ResourceDTO> result = service.findById(1L);
+        Optional<ResourceView> result = service.findById(1L);
 
         assertThat(result).contains(dto);
     }
@@ -73,7 +84,7 @@ class ResourceServiceImplTest {
         when(repository.existsById(1L)).thenReturn(true);
         when(repository.findById(1L)).thenReturn(Optional.of(resource));
 
-        ResourceDTO dto = mappingService.toDTO(resource);
+        ResourceView dto = mappingService.toDTO(resource);
 
         service.deleteById(1L);
 
@@ -91,16 +102,26 @@ class ResourceServiceImplTest {
 
     @Test
     void save_whenIdIsNull_savesNewAndPublishes() {
-        ResourceDTO dto = new ResourceDTO();
+        ResourceView dto = ResourceView.builder()
+                .id(1L)
+                .type("METERING_POINT")
+                .countryCode("EE")
+                .location(LocationView.builder().city("Tallinn").build())
+                .build();
         Resource entity = new Resource();
         Resource saved = new Resource();
-        ResourceDTO savedDto = new ResourceDTO();
+        ResourceView savedDto = ResourceView.builder()
+                .id(1L)
+                .type("METERING_POINT")
+                .countryCode("EE")
+                .location(LocationView.builder().city("Tallinn").build())
+                .build();
 
         when(mappingService.toEntity(dto)).thenReturn(entity);
         when(repository.save(entity)).thenReturn(saved);
         when(mappingService.toDTO(saved)).thenReturn(savedDto);
 
-        ResourceDTO result = service.save(null, dto);
+        ResourceView result = service.save(null, dto);
 
         assertThat(result).isEqualTo(savedDto);
         verify(publisher).publishCreate(result);
@@ -108,8 +129,12 @@ class ResourceServiceImplTest {
 
     @Test
     void save_whenIdExists_updatesResource() {
-        ResourceDTO dto = new ResourceDTO();
-        dto.setId(1L);
+        ResourceView dto = ResourceView.builder()
+                .id(1L)
+                .type("METERING_POINT")
+                .countryCode("EE")
+                .location(LocationView.builder().city("Tallinn").build())
+                .build();
 
         Resource existing = new Resource();
         existing.setCharacteristics(new ArrayList<>());
@@ -118,7 +143,12 @@ class ResourceServiceImplTest {
         toSave.setCharacteristics(new ArrayList<>());
 
         Resource updated = new Resource();
-        ResourceDTO updatedDto = new ResourceDTO();
+        ResourceView updatedDto = ResourceView.builder()
+                .id(1L)
+                .type("METERING_POINT")
+                .countryCode("EE")
+                .location(LocationView.builder().city("Tallinn").build())
+                .build();
 
         when(repository.existsById(1L)).thenReturn(true);
         when(repository.findById(1L)).thenReturn(Optional.of(existing));
@@ -126,7 +156,7 @@ class ResourceServiceImplTest {
         when(repository.save(existing)).thenReturn(updated);
         when(mappingService.toDTO(updated)).thenReturn(updatedDto);
 
-        ResourceDTO result = service.save(1L, dto);
+        ResourceView result = service.save(1L, dto);
 
         assertThat(result).isEqualTo(updatedDto);
         verify(repository).save(existing);

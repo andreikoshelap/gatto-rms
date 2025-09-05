@@ -1,6 +1,6 @@
 package com.gatto.rms.publisher;
 
-import com.gatto.rms.dto.ResourceDTO;
+import com.gatto.rms.view.ResourceView;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -15,18 +15,18 @@ public class RestPublisherClient {
 
     private final String publisherUrl = "http://localhost:8086/publish";
 
-    public void publishCreate(ResourceDTO dto) {
+    public void publishCreate(ResourceView view) {
         log.info("Calling resource-publisher to publish create");
-        restTemplate.postForObject(publisherUrl + "/create", dto, Void.class);
+        restTemplate.postForObject(publisherUrl + "/create", view, Void.class);
     }
 
-    public void publishUpdate(ResourceDTO dto) {
+    public void publishUpdate(ResourceView view) {
         log.info("Calling resource-publisher to publish update");
-        restTemplate.postForObject(publisherUrl + "/update", dto, Void.class);
+        restTemplate.postForObject(publisherUrl + "/update", view, Void.class);
     }
 
-    public void publishDelete(ResourceDTO dto) {
+    public void publishDelete(ResourceView view) {
         log.info("Calling resource-publisher to publish delete");
-        restTemplate.postForObject(publisherUrl + "/delete", dto, Void.class);
+        restTemplate.postForObject(publisherUrl + "/delete", view, Void.class);
     }
 }
