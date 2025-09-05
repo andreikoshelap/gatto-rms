@@ -1,28 +1,21 @@
 package com.gatto.rms.config;
 
-import com.gatto.rms.entity.Characteristic;
-import com.gatto.rms.entity.CharacteristicType;
-import com.gatto.rms.entity.Location;
-import com.gatto.rms.entity.Resource;
-import com.gatto.rms.entity.ResourceType;
+import com.gatto.rms.entity.*;
 import com.gatto.rms.repository.ResourceRepository;
 import jakarta.annotation.PostConstruct;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class DataInitializer {
-
     private final ResourceRepository repository;
 
     @PostConstruct
-    @Transactional
     public void init() {
-        // ===== Resource 1: Estonia =====
+        // Resource 1: Estonia
         Location loc1 = new Location();
         loc1.setStreetAddress("Viru väljak 4");
         loc1.setCity("Tallinn");
@@ -40,11 +33,10 @@ public class DataInitializer {
         r1.setType(ResourceType.METERING_POINT);
         r1.setCountryCode("EE");
         r1.setLocation(loc1);
-        link(r1, c1);
+        r1.setCharacteristics(List.of(c1));
+        r1.setVersion(0L);
 
-        repository.save(r1);
-
-        // ===== Resource 2: Estonia =====
+        // Resource 2: Estonia
         Location loc2 = new Location();
         loc2.setStreetAddress("Harju 10");
         loc2.setCity("Tartu");
@@ -62,11 +54,10 @@ public class DataInitializer {
         r2.setType(ResourceType.CONNECTION_POINT);
         r2.setCountryCode("EE");
         r2.setLocation(loc2);
-        link(r2, c2);
+        r2.setCharacteristics(List.of(c2));
+        r2.setVersion(0L);
 
-        repository.save(r2);
-
-        // ===== Resource 3: Latvia =====
+        // Resource 3: Latvia
         Location loc3 = new Location();
         loc3.setStreetAddress("Brivibas iela 20");
         loc3.setCity("Riga");
@@ -84,11 +75,14 @@ public class DataInitializer {
         r3.setType(ResourceType.METERING_POINT);
         r3.setCountryCode("LV");
         r3.setLocation(loc3);
-        link(r3, c3);
+        r3.setCharacteristics(List.of(c3));
+        r3.setVersion(0L);
 
+        repository.save(r1);
+        repository.save(r2);
         repository.save(r3);
 
-        // ===== Resource 4: Charging Point in Estonia =====
+        // Resource 4: Charging Point in Estonia
         Location loc4 = new Location();
         loc4.setStreetAddress("Pärnu mnt 22");
         loc4.setCity("Tallinn");
@@ -106,11 +100,12 @@ public class DataInitializer {
         r4.setType(ResourceType.METERING_POINT);
         r4.setCountryCode("EE");
         r4.setLocation(loc4);
-        link(r4, c4);
+        r4.setCharacteristics(List.of(c4));
+        r4.setVersion(0L);
 
         repository.save(r4);
 
-        // ===== Resource 5: Latvia, 2 CONNECTION_POINT_STATUS characteristics =====
+        // Resource 5: Latvia, 2 CONNECTION_POINT_STATUS characteristics
         Location loc5 = new Location();
         loc5.setStreetAddress("Dzirnavu iela 67");
         loc5.setCity("Riga");
@@ -123,7 +118,6 @@ public class DataInitializer {
         c5a.setCode("C5A");
         c5a.setType(CharacteristicType.CONNECTION_POINT_STATUS);
         c5a.setValue("active");
-
         Characteristic c5b = new Characteristic();
         c5b.setCode("C5B");
         c5b.setType(CharacteristicType.CONNECTION_POINT_STATUS);
@@ -133,11 +127,12 @@ public class DataInitializer {
         r5.setType(ResourceType.CONNECTION_POINT);
         r5.setCountryCode("LV");
         r5.setLocation(loc5);
-        link(r5, c5a, c5b);
+        r5.setCharacteristics(List.of(c5a, c5b));
+        r5.setVersion(0L);
 
         repository.save(r5);
 
-        // ===== Resource 6: Estonia, 2 CONNECTION_POINT_STATUS characteristics =====
+        // Resource 6: Estonia, 2 CONNECTION_POINT_STATUS characteristics
         Location loc6 = new Location();
         loc6.setStreetAddress("Narva mnt 5");
         loc6.setCity("Narva");
@@ -150,7 +145,6 @@ public class DataInitializer {
         c6a.setCode("C6A");
         c6a.setType(CharacteristicType.CONNECTION_POINT_STATUS);
         c6a.setValue("inactive");
-
         Characteristic c6b = new Characteristic();
         c6b.setCode("C6B");
         c6b.setType(CharacteristicType.CONNECTION_POINT_STATUS);
@@ -160,23 +154,9 @@ public class DataInitializer {
         r6.setType(ResourceType.CONNECTION_POINT);
         r6.setCountryCode("EE");
         r6.setLocation(loc6);
-        link(r6, c6a, c6b);
+        r6.setCharacteristics(List.of(c6a, c6b));
+        r6.setVersion(0L);
 
         repository.save(r6);
-    }
-
-    /**
-     * Связывает ресурс с характеристиками:
-     *  - проставляет владельца связи на стороне Characteristic (c.setResource(r))
-     *  - добавляет характеристики в коллекцию ресурса, инициализируя её при необходимости
-     */
-    private static void link(Resource r, Characteristic... cs) {
-        if (r.getCharacteristics() == null) {
-            r.setCharacteristics(new ArrayList<>());
-        }
-        for (Characteristic c : cs) {
-            c.setResource(r);                 // владелец связи
-            r.getCharacteristics().add(c);    // обратная сторона
-        }
     }
 }
