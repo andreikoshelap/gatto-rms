@@ -1,8 +1,8 @@
 package com.gatto.rms.controller;
 
 
+import com.gatto.rms.contracts.ResourceView;
 import com.gatto.rms.service.ResourceService;
-import com.gatto.rms.view.ResourceView;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

@@ -1,6 +1,6 @@
 package com.gatto.rms.publisher;
 
-import com.gatto.rms.view.ResourceView;
+import com.gatto.rms.contracts.ResourceView;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

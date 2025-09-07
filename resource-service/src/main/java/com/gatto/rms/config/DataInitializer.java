@@ -1,6 +1,10 @@
 package com.gatto.rms.config;
 
-import com.gatto.rms.entity.*;
+import com.gatto.rms.contracts.CharacteristicType;
+import com.gatto.rms.contracts.ResourceType;
+import com.gatto.rms.entity.Characteristic;
+import com.gatto.rms.entity.Location;
+import com.gatto.rms.entity.Resource;
 import com.gatto.rms.repository.ResourceRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

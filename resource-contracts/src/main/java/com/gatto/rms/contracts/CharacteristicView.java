@@ -1,8 +1,10 @@
-package com.gatto.rms.view;
+package com.gatto.rms.contracts;
+
 
 public record CharacteristicView(
         Long id,
         String code,
-        String type,
+        CharacteristicType type,
         String value
 ) {}
+

@@ -1,4 +1,4 @@
-package com.gatto.rms.view;
+package com.gatto.rms.contracts;
 
 import lombok.Builder;
 

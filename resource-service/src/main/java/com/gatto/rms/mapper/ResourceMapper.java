@@ -1,9 +1,9 @@
 package com.gatto.rms.mapper;
 
+import com.gatto.rms.contracts.ResourceView;
+import com.gatto.rms.contracts.ResourceType;
 import com.gatto.rms.entity.Characteristic;
 import com.gatto.rms.entity.Resource;
-import com.gatto.rms.entity.ResourceType;
-import com.gatto.rms.view.ResourceView;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

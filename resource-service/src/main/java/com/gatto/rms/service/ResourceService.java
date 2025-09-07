@@ -1,6 +1,7 @@
 package com.gatto.rms.service;
 
-import com.gatto.rms.view.ResourceView;
+
+import com.gatto.rms.contracts.ResourceView;
 
 import java.util.List;
 import java.util.Optional;

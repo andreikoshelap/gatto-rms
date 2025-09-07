@@ -2,6 +2,7 @@ package com.gatto.rms.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.gatto.rms.contracts.ResourceType;
 
 import java.util.List;
 

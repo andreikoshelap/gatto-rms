@@ -1,7 +1,7 @@
 package com.gatto.rms.mapper;
 
+import com.gatto.rms.contracts.CharacteristicView;
 import com.gatto.rms.entity.Characteristic;
-import com.gatto.rms.view.CharacteristicView;
 import org.mapstruct.Mapper;
 
 import java.util.List;

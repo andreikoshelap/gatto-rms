@@ -1,8 +1,8 @@
 package com.gatto.rms.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gatto.rms.view.LocationView;
-import com.gatto.rms.view.ResourceView;
+import com.gatto.rms.contracts.LocationView;
+import com.gatto.rms.contracts.ResourceView;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

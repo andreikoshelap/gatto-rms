@@ -1,5 +1,6 @@
 package com.gatto.rms.entity;
 
+import com.gatto.rms.contracts.CharacteristicType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

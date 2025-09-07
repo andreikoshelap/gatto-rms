@@ -2,12 +2,14 @@ server:
   port: 8087
 
 spring:
-  application:
-    name: resource-consumer
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
-      group-id: resource-group
-      auto-offset-reset: earliest
+      group-id: resource-consumer
+      enable-auto-commit: false
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      # optional tuning
+      max-poll-records: 50
+      properties:
+        isolation.level: read_committed

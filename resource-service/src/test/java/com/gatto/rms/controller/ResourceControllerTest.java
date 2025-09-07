@@ -1,8 +1,8 @@
 package com.gatto.rms.controller;
 
+import com.gatto.rms.contracts.ResourceView;
+import com.gatto.rms.contracts.LocationView;
 import com.gatto.rms.service.ResourceService;
-import com.gatto.rms.view.LocationView;
-import com.gatto.rms.view.ResourceView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;

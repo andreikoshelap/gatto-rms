@@ -1,12 +1,12 @@
 package com.gatto.rms.service;
 
+import com.gatto.rms.contracts.LocationView;
+import com.gatto.rms.contracts.ResourceView;
 import com.gatto.rms.entity.Resource;
 import com.gatto.rms.error.ResourceDoesNotExistException;
 import com.gatto.rms.mapper.ResourceMapper;
 import com.gatto.rms.publisher.RestPublisherClient;
 import com.gatto.rms.repository.ResourceRepository;
-import com.gatto.rms.view.LocationView;
-import com.gatto.rms.view.ResourceView;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

@@ -1,11 +1,11 @@
 package com.gatto.rms.service;
 
+import com.gatto.rms.contracts.ResourceView;
 import com.gatto.rms.entity.Resource;
 import com.gatto.rms.error.ResourceDoesNotExistException;
 import com.gatto.rms.mapper.ResourceMapper;
 import com.gatto.rms.publisher.RestPublisherClient;
 import com.gatto.rms.repository.ResourceRepository;
-import com.gatto.rms.view.ResourceView;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -43,8 +43,8 @@ public class ResourceServiceImpl implements ResourceService {
         Resource resource = repository.findById(id).orElseThrow();
         log.debug("Will delete resource: {}", resource);
         repository.deleteById(id);
-        ResourceView dto = mappingService.toView(resource);
-        restPublisherClient.publishDelete(dto);
+        ResourceView view = mappingService.toView(resource);
+        restPublisherClient.publishDelete(view);
     }
 
     @Override
