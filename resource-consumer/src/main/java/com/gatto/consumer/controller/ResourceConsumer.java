@@ -3,6 +3,7 @@ package com.gatto.consumer.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gatto.consumer.mapper.ResourceMapper;
 import com.gatto.consumer.repository.ResourceRepository;
+import com.gatto.rms.contracts.ResourceView;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
@@ -28,7 +29,7 @@ public class ResourceConsumer {
                           @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
                           Acknowledgment ack) throws Exception {
 
-        var view = objectMapper.readValue(json, com.gatto.rms.contracts.ResourceView.class);
+        var view = objectMapper.readValue(json, ResourceView.class);
 
         switch (topic) {
             case "resource-created", "resource-updated" -> {

@@ -2,8 +2,8 @@ package com.gatto.rms.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gatto.rms.contracts.ResourceView;
 import com.gatto.rms.service.KafkaPublisherService;
-import com.gatto.rms.view.ResourceView;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
