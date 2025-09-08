@@ -51,7 +51,7 @@ public class ResourceServiceImpl implements ResourceService {
     public ResourceView save(Long id, ResourceView resourceView) {
         Resource forSave = mappingService.toEntity(resourceView);
         ResourceView view;
-        if (resourceView.id() != null && repository.existsById(id)) {
+        if (resourceView.id() != null && repository.existsById(id)) { //update
             Resource existingResource = repository.findById(id).orElseThrow();
             log.debug("Existing resource: {}", existingResource);
             existingResource.setType(forSave.getType());
@@ -66,7 +66,7 @@ public class ResourceServiceImpl implements ResourceService {
             Resource saved = repository.save(existingResource);
             view = mappingService.toView(saved);
             restPublisherClient.publishUpdate(view);
-        } else {
+        } else { //creation
             log.debug("Creating new resource with type={}, countryCode={}, location={}",
                     forSave.getType(), forSave.getCountryCode(), forSave.getLocation());
 

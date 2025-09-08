@@ -11,4 +11,5 @@ public interface CharacteristicMapper {
     CharacteristicView toView(Characteristic entity);
     Characteristic toEntity(CharacteristicView view);
     List<CharacteristicView> toCharacteristicViewList(List<Characteristic> list);
+    List<Characteristic> toEntityList(List<CharacteristicView> list);
 }
