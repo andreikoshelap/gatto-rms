@@ -24,9 +24,9 @@ Source: [diagram.drawio](kafka-gateway.drawio)
     - Provide an endpoint to send the entire database of resources via Kafka
 
 - **Test Data Population**
-    - On application startup, the database is seeded with at least 3 resources of different types
+    - On application startup, the database is seeded with at 6 resources of different types
     - Each resource includes a location and multiple characteristics
-    - At least two different countries are represented among the resources
+    - Two different countries (Estonia and Latvia) are represented among the resources
 
 ---
 
@@ -61,18 +61,18 @@ cd gatto-rms
 ./gradlew clean build
 
 ### 3. Run with Docker
-
-```bash
 docker compose up --d
 ```
 
 ### 4. Access the Application
 Base URL: http://localhost:4200
 
-This will open Google map, with predefined 5 resources (nb in environment folder of resource-ui module set 
-file with googleMapsApiKey, this key not commited), By click on existing marker user can open, update or delete 
-resource. By double-click on any place  in map user can create new resource. Any changes with resources goes into 
-postgres db and then on 3 different topic in kafka module: resource-created-events,  resource-updated-events, 
+This will open Google map, with predefined 5 resources (nb in environment folder of resource-ui module set
+file with googleMapsApiKey, this key not commited).
+By click on existing marker user can open, update or delete resource.
+By double-click on any place in map user can create new resource. 
+Any changes with resources goes into
+postgres db and then on 3 different topic in kafka module: resource-created-events, resource-updated-events,
 resource-deleted-events.
 
 ## Example Kafka Message

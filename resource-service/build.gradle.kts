@@ -26,10 +26,13 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("org.postgresql:postgresql:42.7.7")
     implementation("org.mapstruct:mapstruct:1.5.5.Final")
+    implementation("com.gatto.rms:resource-contracts:1.0.0")
 
+    implementation("org.mapstruct:mapstruct:1.5.5.Final")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
+    compileOnly("org.projectlombok:lombok:1.18.32")
+    annotationProcessor("org.projectlombok:lombok:1.18.32")
+    annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 

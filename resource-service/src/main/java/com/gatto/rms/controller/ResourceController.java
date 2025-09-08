@@ -1,6 +1,7 @@
 package com.gatto.rms.controller;
 
-import com.gatto.rms.dto.ResourceDTO;
+
+import com.gatto.rms.contracts.ResourceView;
 import com.gatto.rms.service.ResourceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,26 +19,27 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 @Slf4j
 public class ResourceController {
+
     private final ResourceService resourceService;
 
     @PostMapping
-    public ResponseEntity<ResourceDTO> create(@RequestBody ResourceDTO resourceDTO) {
-        ResourceDTO saved = resourceService.save(resourceDTO.getId(), resourceDTO);
-        return new ResponseEntity<>(saved, HttpStatus.CREATED);
+    public ResponseEntity<ResourceView> create(@RequestBody ResourceView resourceView) {
+        ResourceView saved = resourceService.save(resourceView.id(), resourceView);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @GetMapping
-    public List<ResourceDTO> all() {
+    public List<ResourceView> all() {
         return resourceService.getAllResources();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResourceDTO> get(@PathVariable("id") Long id) {
+    public ResponseEntity<ResourceView> get(@PathVariable Long id) {
         try {
-            ResourceDTO resource = resourceService.findById(id).orElseThrow();
+            ResourceView resource = resourceService.findById(id).orElseThrow();
             return ResponseEntity.ok(resource);
         } catch (NoSuchElementException e) {
-            log.error("Resource not found with ID: {}", id, e);
+            log.warn("Resource not found with ID: {}", id, e);
             return ResponseEntity.notFound().build();
         } catch (ObjectOptimisticLockingFailureException e) {
             log.error("Optimistic locking failure while retrieving resource with ID: {}", id, e);
@@ -46,14 +48,15 @@ public class ResourceController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResourceDTO> update(@PathVariable("id") Long id, @RequestBody ResourceDTO updatedDTO) {
+    public ResponseEntity<ResourceView> update(@PathVariable Long id, @RequestBody ResourceView view) {
         try {
-            log.info("Updating resource with ID: {}", id);
-            ResourceDTO savedResource = resourceService.save(id, updatedDTO);
-            log.info("Resource updated successfully: {}", savedResource);
+            if (view.id() != null && !view.id().equals(id)) {
+                log.warn("Path ID {} != payload ID {}", id, view.id());
+            }
+            ResourceView savedResource = resourceService.save(id, view);
             return ResponseEntity.ok(savedResource);
         } catch (NoSuchElementException e) {
-            log.error("Resource not found with ID: {}", id, e);
+            log.warn("Resource not found with ID: {}", id, e);
             return ResponseEntity.notFound().build();
         } catch (ObjectOptimisticLockingFailureException e) {
             log.error("Optimistic locking failure while updating resource with ID: {}", id, e);
@@ -62,12 +65,13 @@ public class ResourceController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         try {
+            log.info("Deleting resource with ID: {}", id);
             resourceService.deleteById(id);
             return ResponseEntity.noContent().build();
         } catch (NoSuchElementException e) {
-            log.error("Resource not found with ID: {}", id, e);
+            log.warn("Resource not found with ID: {}", id, e);
             return ResponseEntity.notFound().build();
         } catch (ObjectOptimisticLockingFailureException e) {
             log.error("Optimistic locking failure while deleting resource with ID: {}", id, e);

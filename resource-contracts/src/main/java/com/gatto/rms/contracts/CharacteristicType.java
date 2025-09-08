@@ -1,4 +1,4 @@
-package com.gatto.rms.entity;
+package com.gatto.rms.contracts;
 
 public enum CharacteristicType {
     CONSUMPTION_TYPE,

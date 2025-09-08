@@ -1,9 +1,8 @@
 package com.gatto.rms.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gatto.rms.dto.CharacteristicDTO;
-import com.gatto.rms.dto.LocationDTO;
-import com.gatto.rms.dto.ResourceDTO;
+import com.gatto.rms.contracts.LocationView;
+import com.gatto.rms.contracts.ResourceView;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -16,9 +15,6 @@ import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
-
-import java.util.Collections;
-import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -46,34 +42,25 @@ public class ResourceControllerITest {
     @Test
     void shouldCreateThenRetrieveResource() throws Exception {
         // given
-        LocationDTO loc1 = new LocationDTO();
-        loc1.setStreetAddress("Viru väljak 4");
-        loc1.setCity("Tallinn");
-        loc1.setPostalCode("10111");
-        loc1.setCountryCode("EE");
-        loc1.setLatitude(59.4370);
-        loc1.setLongitude(24.7536);
-        ResourceDTO dto = new ResourceDTO();
-        dto.setType("METERING_POINT");
-        dto.setCountryCode("EE");
-        dto.setLocation(loc1);
-        dto.setCharacteristics(List.of(
-                new CharacteristicDTO(null, "c33", "CHARGING_POINT", "fast"),
-                new CharacteristicDTO(null, "c31", "CONSUMPTION_TYPE", "renewable")
-        ));
+        ResourceView view = ResourceView.builder()
+                .id(1L)
+                .type("METERING_POINT")
+                .countryCode("EE")
+                .location(LocationView.builder().city("Tallinn").build())
+                .build();
 
         // when: create resource
         String responseBody = mockMvc.perform(post("/api/resources")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto)))
+                        .content(objectMapper.writeValueAsString(view)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNumber())
                 .andReturn().getResponse().getContentAsString();
 
-        ResourceDTO created = objectMapper.readValue(responseBody, ResourceDTO.class);
+        ResourceView created = objectMapper.readValue(responseBody, ResourceView.class);
 
         // then: fetch by ID
-        mockMvc.perform(get("/api/resources/" + created.getId()))
+        mockMvc.perform(get("/api/resources/" + created.id()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.location.streetAddress").value("Viru väljak 4"))
                 .andExpect(jsonPath("$.location.city").value("Tallinn"))
@@ -90,19 +77,20 @@ public class ResourceControllerITest {
     @Test
     void shouldDeleteResource() throws Exception {
         // Create
-        ResourceDTO dto = new ResourceDTO();
-        dto.setType("CONNECTION_POINT");
-        dto.setCountryCode("EE");
-        dto.setLocation(new LocationDTO());
-        dto.setCharacteristics(Collections.emptyList());
+        ResourceView view = ResourceView.builder()
+                .id(1L)
+                .type("METERING_POINT")
+                .countryCode("EE")
+                .location(LocationView.builder().city("Tallinn").build())
+                .build();
 
         String createdJson = mockMvc.perform(post("/api/resources")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto)))
+                        .content(objectMapper.writeValueAsString(view)))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
 
-        Long id = objectMapper.readValue(createdJson, ResourceDTO.class).getId();
+        Long id = objectMapper.readValue(createdJson, ResourceView.class).id();
 
         // Delete
         mockMvc.perform(delete("/api/resources/" + id))

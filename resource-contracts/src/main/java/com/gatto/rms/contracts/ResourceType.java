@@ -1,4 +1,4 @@
-package com.gatto.rms.entity;
+package com.gatto.rms.contracts;
 
 public enum ResourceType {
     METERING_POINT,

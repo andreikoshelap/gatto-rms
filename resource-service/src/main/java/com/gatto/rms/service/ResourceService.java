@@ -1,12 +1,14 @@
 package com.gatto.rms.service;
 
-import com.gatto.rms.dto.ResourceDTO;
+
+import com.gatto.rms.contracts.ResourceView;
+
 import java.util.List;
 import java.util.Optional;
 
 public interface ResourceService {
-    List<ResourceDTO> getAllResources();
-    Optional<ResourceDTO> findById(Long id);
+    List<ResourceView> getAllResources();
+    Optional<ResourceView> findById(Long id);
     void deleteById(Long id);
-    ResourceDTO save(Long id, ResourceDTO resourceDTO);
+    ResourceView save(Long id, ResourceView resourceDTO);
 }
