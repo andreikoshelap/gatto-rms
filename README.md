@@ -7,37 +7,37 @@ and characteristic data. It supports creation, updating, deletion, retrieval, an
 
 ```mermaid
 flowchart LR
-  %% High-level architecture with new modules
-  classDef svc fill:#eef9ff,stroke:#9ac7ff,color:#0b3b5c
-  classDef infra fill:#fff7e6,stroke:#f0c36d,color:#5c3b0b
-  classDef db fill:#f3faff,stroke:#b6e3ff,color:#0b3b5c
-  classDef lib fill:#f2f2f2,stroke:#c9c9c9,color:#333,stroke-dasharray: 3 3
+  %% Class definitions
+  classDef svc fill:#eef9ff,stroke:#9ac7ff,color:#0b3b5c;
+  classDef infra fill:#fff7e6,stroke:#f0c36d,color:#5c3b0b;
+  classDef db fill:#f3faff,stroke:#b6e3ff,color:#0b3b5c;
+  classDef lib fill:#f2f2f2,stroke:#c9c9c9,color:#333,stroke-dasharray: 3 3;
 
-  UI["UI (Angular)"]:::svc
+  UI["UI (Angular)"]
 
-  subgraph RS["resource-server (CRUD)"]:::svc
-    RSapi["REST API"]:::svc
-    OUTBOX[["Outbox table"]]:::db
-    DB1[("(Write DB) PostgreSQL")]:::db
+  subgraph RS["resource-server (CRUD)"]
+    RSapi["REST API"]
+    OUTBOX[["Outbox table"]]
+    DB1[("(Write DB) PostgreSQL")]
   end
 
-  subgraph RP["resource-publisher"]:::svc
-    RPsvc["KafkaPublisherService"]:::svc
+  subgraph RP["resource-publisher"]
+    RPsvc["KafkaPublisherService"]
   end
 
-  subgraph KAFKA["Kafka Cluster"]:::infra
+  subgraph KAFKA["Kafka Cluster"]
     Tcreated["resource-created\n(partitions: 0,1)"]
     Tupdated["resource-updated\n(partitions: 0,1)"]
     Tdeleted["resource-deleted\n(partitions: 0,1)"]
   end
 
-  subgraph RC["resource-consumer"]:::svc
-    RCsvc["@KafkaListener(s)"]:::svc
-    Mapper["Resource/Characteristic mappers"]:::svc
-    DB2[("(Read DB) PostgreSQL")]:::db
+  subgraph RC["resource-consumer"]
+    RCsvc["@KafkaListener(s)"]
+    Mapper["Resource/Characteristic mappers"]
+    DB2[("(Read DB) PostgreSQL")]
   end
 
-  CONTRACTS["resource-contracts\n(ResourceView, CharacteristicView, LocationView,\nCharacteristicType, etc.)"]:::lib
+  CONTRACTS["resource-contracts\n(ResourceView, CharacteristicView, LocationView,\nCharacteristicType, etc.)"]
 
   %% Flows
   UI -->|CRUD REST| RSapi
@@ -55,38 +55,40 @@ flowchart LR
 
   RCsvc --> Mapper --> DB2
 
-  %% Contracts used in publisher & consumer (and optionally server)
-  CONTRACTS -.-> RP
-  CONTRACTS -.-> RC
-  CONTRACTS -.-> RS
-  
+  %% Class assignments (separate from node definitions)
+  class UI,RS,RSapi,OUTBOX,DB1,RP,RPsvc,RC,RCsvc,Mapper,DB2 svc;
+  class KAFKA infra;
+  class CONTRACTS lib;
 ```
 
 ```mermaid
 flowchart TB
-classDef infra fill:#fff7e6,stroke:#f0c36d,color:#5c3b0b
-classDef svc fill:#eef9ff,stroke:#9ac7ff,color:#0b3b5c
+  classDef infra fill:#fff7e6,stroke:#f0c36d,color:#5c3b0b;
+  classDef svc fill:#eef9ff,stroke:#9ac7ff,color:#0b3b5c;
 
-subgraph Kafka["Kafka Cluster"]:::infra
-direction TB
-t1["resource-created\np0 | p1"]
-t2["resource-updated\np0 | p1"]
-t3["resource-deleted\np0 | p1"]
-end
+  subgraph Kafka["Kafka Cluster"]
+    direction TB
+    t1["resource-created\np0 | p1"]
+    t2["resource-updated\np0 | p1"]
+    t3["resource-deleted\np0 | p1"]
+  end
 
-subgraph CG["Consumer group: resource-consumer"]:::svc
-direction LR
-c1["Instance #1\n(concurrency=2)"]:::svc
-c2["Instance #2\n(concurrency=2)"]:::svc
-end
+  subgraph CG["Consumer group: resource-consumer"]
+    direction LR
+    c1["Instance #1\n(concurrency=2)"]
+    c2["Instance #2\n(concurrency=2)"]
+  end
 
-%% Partition assignment illustration (example)
-t1 -- p0 --> c1
-t1 -- p1 --> c2
-t2 -- p0 --> c1
-t2 -- p1 --> c2
-t3 -- p0 --> c1
-t3 -- p1 --> c2
+  %% Partition assignment illustration (example)
+  t1 -- p0 --> c1
+  t1 -- p1 --> c2
+  t2 -- p0 --> c1
+  t2 -- p1 --> c2
+  t3 -- p0 --> c1
+  t3 -- p1 --> c2
+
+  class Kafka infra;
+  class CG,c1,c2 svc;
 ```
 
 ##  Functional Requirements
