@@ -31,8 +31,8 @@ public class KafkaConsumerService {
     ) throws Exception {
 
         var topic = rec.topic();
-        var current = objectMapper.readValue(rec.value(), com.gatto.rms.contracts.ResourceView.class);
-        var previous = readModelService.findViewById(current.id()).orElse(null);
+        var curr = objectMapper.readValue(rec.value(), com.gatto.rms.contracts.ResourceView.class);
+        var prev = readModelService.findViewById(curr.id()).orElse(null);
 
         // decide reason
         var reason = switch (topic) {

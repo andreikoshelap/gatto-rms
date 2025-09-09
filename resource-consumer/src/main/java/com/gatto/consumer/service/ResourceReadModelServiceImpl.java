@@ -45,8 +45,8 @@ public class ResourceReadModelServiceImpl implements ResourceReadModelService {
                 e.getId(),
                 e.getType(),
                 e.getCountryCode(),
+                List.of(),
                 location,
-                new ArrayList<>(0),
                 e.getVersion()
         );
     }
