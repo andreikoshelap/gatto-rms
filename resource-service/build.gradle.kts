@@ -26,7 +26,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("org.postgresql:postgresql:42.7.7")
     implementation("org.mapstruct:mapstruct:1.5.5.Final")
-    implementation("com.gatto.rms:resource-contracts:1.0.0")
+    implementation(project(":resource-contracts"))
 
     implementation("org.mapstruct:mapstruct:1.5.5.Final")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")

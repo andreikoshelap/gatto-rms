@@ -12,7 +12,6 @@ import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
 import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.util.backoff.FixedBackOff;
 
-// All comments in English
 @Configuration
 @EnableKafka
 public class KafkaConsumerConfig {

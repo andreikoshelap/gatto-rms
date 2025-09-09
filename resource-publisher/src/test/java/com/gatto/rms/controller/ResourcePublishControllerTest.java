@@ -24,7 +24,7 @@ class ResourcePublishControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper objectMapper; // real ObjectMapper from Spring context
+    private ObjectMapper objectMapper;
 
     @MockBean
     private KafkaPublisherService kafkaPublisherService;

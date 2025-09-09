@@ -17,7 +17,7 @@ public class ResourceService {
     public void upsert(ResourceView view) {
         // idempotent upsert by natural key (e.g., id); adjust to your schema
         var entity = mapper.toEntity(view);
-        repo.save(entity); // ON CONFLICT-like via JPA merge semantics
+        repo.save(entity);
     }
 
     @Transactional
