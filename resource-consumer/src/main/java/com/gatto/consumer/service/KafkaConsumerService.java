@@ -44,7 +44,6 @@ public class KafkaConsumerService {
             default -> "UNKNOWN";
         };
 
-        // compute and persist diff (skip for DELETED if не нужно)
         if (!"DELETED".equals(reason)) {
             var diffObj = DiffUtil.compute(prev, curr);
             var change = new ResourceChange();
