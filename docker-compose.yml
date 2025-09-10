@@ -37,13 +37,19 @@ services:
     ports:
       - "8087:8087"
     environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_FLYWAY_ENABLED=true
+      - SPRING_FLYWAY_LOCATIONS=classpath:db/migration
       - SPRING_DATASOURCE_URL=jdbc:postgresql://resource-postgres:5432/postgres
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=admin
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
     depends_on:
-      - resource-postgres
-      - kafka
+      resource-postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
 
   resource-postgres:
     image: postgres:13
@@ -55,6 +61,11 @@ services:
       - POSTGRES_DB=postgres
     volumes:
       - pgdata_resource:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   resource-ui:
     build:
