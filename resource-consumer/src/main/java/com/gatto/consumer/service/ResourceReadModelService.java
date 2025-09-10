@@ -2,8 +2,11 @@ package com.gatto.consumer.service;
 
 import com.gatto.rms.contracts.ResourceView;
 
-import java.util.Optional;
-
 public interface ResourceReadModelService {
-    Optional<ResourceView> findViewById(Long id);
+
+    void applyCreate(ResourceView curr);
+
+    void applyUpdate(ResourceView curr);
+
+    void applyDelete(Long id, Long version);
 }

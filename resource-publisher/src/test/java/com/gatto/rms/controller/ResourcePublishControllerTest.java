@@ -42,7 +42,7 @@ class ResourcePublishControllerTest {
 
         // Capture the JSON sent to the publisher service
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(kafkaPublisherService).publishCreatedEvent(captor.capture());
+        verify(kafkaPublisherService).publishCreatedEvent(captor.capture(), 1L);
 
         // Deserialize back to ResourceView and assert fields
         ResourceView sent = objectMapper.readValue(captor.getValue(), ResourceView.class);
@@ -61,7 +61,7 @@ class ResourcePublishControllerTest {
                 .andExpect(status().isOk());
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(kafkaPublisherService).publishUpdatedEvent(captor.capture());
+        verify(kafkaPublisherService).publishUpdatedEvent(captor.capture(), 2L);
 
         ResourceView sent = objectMapper.readValue(captor.getValue(), ResourceView.class);
         assertThat(sent.id()).isEqualTo(2L);
@@ -79,7 +79,7 @@ class ResourcePublishControllerTest {
                 .andExpect(status().isOk());
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(kafkaPublisherService).publishDeletedEvent(captor.capture());
+        verify(kafkaPublisherService).publishDeletedEvent(captor.capture(), 3L);
 
         ResourceView sent = objectMapper.readValue(captor.getValue(), ResourceView.class);
         assertThat(sent.id()).isEqualTo(3L);

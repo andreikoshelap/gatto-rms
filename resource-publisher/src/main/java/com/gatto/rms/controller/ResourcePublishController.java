@@ -21,19 +21,19 @@ public class ResourcePublishController {
 
     @PostMapping("/create")
     public ResponseEntity<Void> publishCreate(@RequestBody ResourceView view) throws JsonProcessingException {
-        kafkaPublisherService.publishCreatedEvent(objectMapper.writeValueAsString(view));
+        kafkaPublisherService.publishCreatedEvent(objectMapper.writeValueAsString(view), view.id());
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/update")
     public ResponseEntity<Void> publishUpdate(@RequestBody ResourceView view) throws JsonProcessingException {
-        kafkaPublisherService.publishUpdatedEvent(objectMapper.writeValueAsString(view));
+        kafkaPublisherService.publishUpdatedEvent(objectMapper.writeValueAsString(view), view.id());
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/delete")
     public ResponseEntity<Void> publishDelete(@RequestBody ResourceView view) throws JsonProcessingException {
-        kafkaPublisherService.publishDeletedEvent(objectMapper.writeValueAsString(view));
+        kafkaPublisherService.publishDeletedEvent(objectMapper.writeValueAsString(view), view.id());
         return ResponseEntity.ok().build();
     }
 }

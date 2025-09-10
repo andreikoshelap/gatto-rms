@@ -5,8 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
 @Service
 public class KafkaPublisherService {
 
@@ -20,20 +18,20 @@ public class KafkaPublisherService {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void publishCreatedEvent(String message) {
-        String key = UUID.randomUUID().toString();
+    public void publishCreatedEvent(String message, Long id) {
+        String key = String.valueOf(id);
         logger.info("Publishing create message to Kafka with key {}: {}", key, message);
         kafkaTemplate.send(CREATE_TOPIC, key, message);
     }
 
-    public void publishUpdatedEvent(String message) {
-        String key = UUID.randomUUID().toString();
+    public void publishUpdatedEvent(String message, Long id) {
+        String key = String.valueOf(id);
         logger.info("Publishing update message to Kafka with key {}: {}", key, message);
         kafkaTemplate.send(UPDATE_TOPIC, key, message);
     }
 
-    public void publishDeletedEvent(String message) {
-        String key = UUID.randomUUID().toString();
+    public void publishDeletedEvent(String message, Long id) {
+        String key = String.valueOf(id);
         logger.info("Publishing deleted message to Kafkawith key {}: {}", key, message);
         kafkaTemplate.send(DELETE_TOPIC, key, message);
     }

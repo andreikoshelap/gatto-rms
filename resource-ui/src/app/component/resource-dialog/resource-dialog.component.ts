@@ -59,7 +59,8 @@ export class ResourceDialogComponent {
 
   save(): void {
     if (this.isNew) {
-      console.log('Creating resource with id:', this.data.resource.id);
+      this.data.resource.countryCode = this.data.resource.location.countryCode;
+      console.log('Creating resource with countryCode:', this.data.resource.countryCode);
       this.resourceService.createResource(this.data.resource).subscribe({
         next: (createdResource) => {
           console.log('Resource created:', createdResource);

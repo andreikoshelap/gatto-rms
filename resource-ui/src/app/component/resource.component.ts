@@ -28,6 +28,7 @@ export class ResourceComponent implements OnInit {
   markers: any[] = [];
   zoom = 7;
   mapReady = false;
+  private readonly DEFAULT_COUNTRY = 'EE';
 
 
   constructor(
@@ -63,23 +64,60 @@ export class ResourceComponent implements OnInit {
   }
 
   onMapDblClick(event: google.maps.MapMouseEvent): void {
-    if (event.latLng) {
-      const newResource: Resource = {
-        id: undefined,
-        type: '',
-        countryCode: '',
-        location: {
-          latitude: event.latLng.lat(),
-          longitude: event.latLng.lng(),
-          city: '',
-          streetAddress: '',
-          postalCode: '',
-          countryCode: ''
-        },
-        characteristics: []
-      };
-      this.openResourceDialog(newResource, true);
-    }
+    const latLng = event.latLng;
+    if (!latLng) return;
+
+    const geocoder = new google.maps.Geocoder();
+
+    geocoder.geocode({ location: latLng })
+      .then(({ results }) => {
+        const countryComp = this.findAddressComponent(results, 'country');
+        const cityComp = this.findAddressComponent(results, 'locality')
+          ?? this.findAddressComponent(results, 'postal_town'); // fallback for some regions
+        const postalComp = this.findAddressComponent(results, 'postal_code');
+        const routeComp = this.findAddressComponent(results, 'route');
+        const numberComp = this.findAddressComponent(results, 'street_number');
+
+        const countryCode = countryComp?.short_name ?? this.DEFAULT_COUNTRY;
+        const city = cityComp?.long_name ?? '';
+        const postalCode = postalComp?.long_name ?? '';
+        const streetAddress = [routeComp?.long_name, numberComp?.long_name].filter(Boolean).join(' ');
+
+        const newResource: Resource = {
+          id: undefined,
+          type: '',
+          countryCode, // top-level if you keep it
+          location: {
+            latitude: latLng.lat(),
+            longitude: latLng.lng(),
+            city,
+            streetAddress,
+            postalCode,
+            countryCode
+          },
+          characteristics: []
+        };
+
+        this.openResourceDialog(newResource, true);
+      })
+      .catch(() => {
+        // Fallback to default country if geocoder fails
+        const newResource: Resource = {
+          id: undefined,
+          type: '',
+          countryCode: this.DEFAULT_COUNTRY,
+          location: {
+            latitude: latLng.lat(),
+            longitude: latLng.lng(),
+            city: '',
+            streetAddress: '',
+            postalCode: '',
+            countryCode: this.DEFAULT_COUNTRY
+          },
+          characteristics: []
+        };
+        this.openResourceDialog(newResource, true);
+      });
   }
 
   create(resource: Resource): void {
@@ -166,4 +204,15 @@ export class ResourceComponent implements OnInit {
     });
   }
 
+  /** Extracts the first address component with given type from geocoder results. */
+  private findAddressComponent(
+    results: google.maps.GeocoderResult[],
+    type: string
+  ): google.maps.GeocoderAddressComponent | undefined {
+    for (const r of results) {
+      const found = r.address_components.find(c => c.types.includes(type));
+      if (found) return found;
+    }
+    return undefined;
+  }
 }
