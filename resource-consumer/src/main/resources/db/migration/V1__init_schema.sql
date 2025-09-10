@@ -44,7 +44,7 @@ CREATE TABLE resource_change (
 -- Prevent duplicate ingestion of the same record
 ALTER TABLE raw_json
     ADD CONSTRAINT uq_rawjson_topic_part_offset
-        UNIQUE (topic, partition, offset);
+        UNIQUE (topic, kafka_partition, kafka_offset);
 
 
 CREATE INDEX IF NOT EXISTS idx_resource_read_model_country ON resource_read_model(country_code);
