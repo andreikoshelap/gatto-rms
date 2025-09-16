@@ -1,7 +1,7 @@
 package com.gatto.rms.controller;
 
-import com.gatto.rms.contracts.ResourceView;
 import com.gatto.rms.contracts.LocationView;
+import com.gatto.rms.contracts.ResourceView;
 import com.gatto.rms.service.ResourceService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ class ResourceControllerTest {
                 .location(LocationView.builder().city("Tallinn").build())
                 .build();
 
-        when(resourceService.save(1L, input)).thenReturn(input);
+        when(resourceService.update(1L, input)).thenReturn(input);
 
         ResponseEntity<ResourceView> response = controller.create(input);
 
@@ -103,9 +103,25 @@ class ResourceControllerTest {
                 .location(LocationView.builder().city("Tallinn").build())
                 .build();
 
-        when(resourceService.save(1L, view)).thenReturn(view);
+        when(resourceService.update(1L, view)).thenReturn(view);
 
         ResponseEntity<ResourceView> response = controller.update(1L, view);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(view, response.getBody());
+    }
+
+    @Test
+    void testCreateOk() {
+        ResourceView view = ResourceView.builder()
+                .type("METERING_POINT")
+                .countryCode("EE")
+                .location(LocationView.builder().city("Tallinn").build())
+                .build();
+
+        when(resourceService.create(view)).thenReturn(view);
+
+        ResponseEntity<ResourceView> response = controller.create(view);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(view, response.getBody());
@@ -120,7 +136,7 @@ class ResourceControllerTest {
                 .location(LocationView.builder().city("Tallinn").build())
                 .build();
 
-        when(resourceService.save(1L, view)).thenThrow(NoSuchElementException.class);
+        when(resourceService.update(1L, view)).thenThrow(NoSuchElementException.class);
 
         ResponseEntity<ResourceView> response = controller.update(1L, view);
 
@@ -136,7 +152,7 @@ class ResourceControllerTest {
                 .location(LocationView.builder().city("Tallinn").build())
                 .build();
 
-        when(resourceService.save(1L, view)).thenThrow(ObjectOptimisticLockingFailureException.class);
+        when(resourceService.update(1L, view)).thenThrow(ObjectOptimisticLockingFailureException.class);
 
         ResponseEntity<ResourceView> response = controller.update(1L, view);
 

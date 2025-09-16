@@ -24,7 +24,7 @@ public class ResourceController {
 
     @PostMapping
     public ResponseEntity<ResourceView> create(@RequestBody ResourceView resourceView) {
-        ResourceView saved = resourceService.save(resourceView.id(), resourceView);
+        ResourceView saved = resourceService.create(resourceView);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
@@ -53,7 +53,7 @@ public class ResourceController {
             if (view.id() != null && !view.id().equals(id)) {
                 log.warn("Path ID {} != payload ID {}", id, view.id());
             }
-            ResourceView savedResource = resourceService.save(id, view);
+            ResourceView savedResource = resourceService.update(id, view);
             return ResponseEntity.ok(savedResource);
         } catch (NoSuchElementException e) {
             log.warn("Resource not found with ID: {}", id, e);

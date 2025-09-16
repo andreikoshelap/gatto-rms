@@ -4,15 +4,14 @@ import com.gatto.rms.contracts.ResourceView;
 import com.gatto.rms.entity.Resource;
 import com.gatto.rms.error.ResourceDoesNotExistException;
 import com.gatto.rms.mapper.ResourceMapper;
-import com.gatto.rms.publisher.RestPublisherClient;
 import com.gatto.rms.repository.ResourceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -20,14 +19,13 @@ import java.util.stream.Collectors;
 public class ResourceServiceImpl implements ResourceService {
     private final ResourceRepository repository;
     private final ResourceMapper mappingService;
-    private final RestPublisherClient restPublisherClient;
-
+    private final AfterCommitPublisher afterCommitPublisher; // publish only after DB commit
 
     @Override
     public List<ResourceView> getAllResources() {
         return repository.findAll().stream()
                 .map(mappingService::toView)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -36,56 +34,60 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
-        if (!repository.existsById(id)) {
-            throw new ResourceDoesNotExistException();
-        }
-        Resource resource = repository.findById(id).orElseThrow();
-        log.debug("Will delete resource: {}", resource);
-        repository.deleteById(id);
+        Resource resource = repository.findById(id)
+                .orElseThrow(ResourceDoesNotExistException::new);
+
         ResourceView view = mappingService.toView(resource);
-        restPublisherClient.publishDelete(view);
+
+        repository.delete(resource);
+
+        afterCommitPublisher.publishDelete(view);
+        log.debug("Deleted resource id={}", id);
     }
 
     @Override
-    public ResourceView save(Long id, ResourceView resourceView) {
-        Resource forSave = mappingService.toEntity(resourceView);
-        ResourceView view;
-        if (resourceView.id() != null && repository.existsById(id)) { //update
-            Resource existingResource = repository.findById(id).orElseThrow();
-            log.debug("Existing resource: {}", existingResource);
-            existingResource.setType(forSave.getType());
-            existingResource.setCountryCode(forSave.getCountryCode());
-            existingResource.setLocation(forSave.getLocation());
-            log.debug("Updated basic fields: type={}, countryCode={}, location={}", forSave.getType(),
-                    forSave.getCountryCode(), forSave.getLocation());
-            existingResource.getCharacteristics().clear();
-            forSave.getCharacteristics().forEach(characteristic ->
-                    existingResource.getCharacteristics().add(characteristic));
-            log.debug("Updated characteristics: {}", existingResource.getCharacteristics());
-            Resource saved = repository.save(existingResource);
-            view = mappingService.toView(saved);
-            restPublisherClient.publishUpdate(view);
-        } else { //creation
-            log.debug("Creating new resource with type={}, countryCode={}, location={}",
-                    forSave.getType(), forSave.getCountryCode(), forSave.getLocation());
+    @Transactional
+    public ResourceView create(ResourceView resourceView) {
+        Resource entity = mappingService.toEntity(resourceView);
 
-            if (forSave.getCharacteristics() != null && !forSave.getCharacteristics().isEmpty()) {
-                forSave.getCharacteristics().forEach(c ->
-                        log.debug("New characteristic: code={}, type={}, value={}",
-                                c.getCode(), c.getType(), c.getValue())
-                );
-            } else {
-                log.debug("No characteristics provided for new resource");
-            }
+        Resource saved = repository.save(entity);
+        ResourceView view = mappingService.toView(saved);
 
-            Resource saved = repository.save(forSave);
-            log.debug("Resource saved with ID={}, total characteristics={}",
-                    saved.getId(), saved.getCharacteristics() != null ? saved.getCharacteristics().size() : 0);
+        afterCommitPublisher.publishCreate(view);
+        log.debug("Created resource id={} type={} country={}", saved.getId(), saved.getType(), saved.getCountryCode());
+        return view;
+    }
 
-            view = mappingService.toView(saved);
-            restPublisherClient.publishCreate(view);
+    @Override
+    @Transactional
+    public ResourceView update(Long id, ResourceView resourceView) {
+        if (resourceView.id() == null || !resourceView.id().equals(id)) {
+            throw new ResourceDoesNotExistException();
         }
+
+        Resource existing = repository.findById(id)
+                .orElseThrow(ResourceDoesNotExistException::new);
+
+        Resource incoming = mappingService.toEntity(resourceView);
+
+        existing.setType(incoming.getType());
+        existing.setCountryCode(incoming.getCountryCode());
+        existing.setLocation(incoming.getLocation());
+
+        existing.getCharacteristics().clear();
+        if (incoming.getCharacteristics() != null) {
+            incoming.getCharacteristics().forEach(ch -> {
+                existing.getCharacteristics().add(ch);
+            });
+        }
+
+        Resource saved = repository.save(existing);
+        ResourceView view = mappingService.toView(saved);
+
+        afterCommitPublisher.publishUpdate(view);
+        log.debug("Updated resource id={} type={} country={}", saved.getId(), saved.getType(), saved.getCountryCode());
         return view;
     }
 }

@@ -10,5 +10,6 @@ public interface ResourceService {
     List<ResourceView> getAllResources();
     Optional<ResourceView> findById(Long id);
     void deleteById(Long id);
-    ResourceView save(Long id, ResourceView resourceDTO);
+    ResourceView create(ResourceView resource);
+    ResourceView update(Long id, ResourceView resource);
 }
