@@ -1,0 +1,112 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: resource-app
+  namespace: rms
+spec:
+  selector: { app: resource-app }
+  ports:
+    - port: 8085
+      targetPort: 8085
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resource-app
+  namespace: rms
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: resource-app } }
+  template:
+    metadata: { labels: { app: resource-app } }
+    spec:
+      containers:
+        - name: app
+          image: rms/resource-service:local
+          imagePullPolicy: IfNotPresent
+          ports: [ { containerPort: 8085 } ]
+          envFrom:
+            - configMapRef: { name: rms-config }
+          env:
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom: { secretKeyRef: { name: db-secret, key: POSTGRES_PASSWORD } }
+          readinessProbe:
+            tcpSocket: { port: 8085 }
+            initialDelaySeconds: 10
+            periodSeconds: 5
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: resource-publisher
+  namespace: rms
+spec:
+  selector: { app: resource-publisher }
+  ports:
+    - port: 8086
+      targetPort: 8086
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resource-publisher
+  namespace: rms
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: resource-publisher } }
+  template:
+    metadata: { labels: { app: resource-publisher } }
+    spec:
+      containers:
+        - name: publisher
+          image: rms/resource-publisher:local
+          imagePullPolicy: IfNotPresent
+          ports: [ { containerPort: 8086 } ]
+          envFrom:
+            - configMapRef: { name: rms-config }
+          env:
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom: { secretKeyRef: { name: db-secret, key: POSTGRES_PASSWORD } }
+          readinessProbe:
+            tcpSocket: { port: 8086 }
+            initialDelaySeconds: 10
+            periodSeconds: 5
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: resource-consumer
+  namespace: rms
+spec:
+  selector: { app: resource-consumer }
+  ports:
+    - port: 8087
+      targetPort: 8087
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resource-consumer
+  namespace: rms
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: resource-consumer } }
+  template:
+    metadata: { labels: { app: resource-consumer } }
+    spec:
+      containers:
+        - name: consumer
+          image: rms/resource-consumer:local
+          imagePullPolicy: IfNotPresent
+          ports: [ { containerPort: 8087 } ]
+          envFrom:
+            - configMapRef: { name: rms-config }
+          env:
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom: { secretKeyRef: { name: db-secret, key: POSTGRES_PASSWORD } }
+
