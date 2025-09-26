@@ -31,7 +31,7 @@ public class ResourceMapper {
             entity.setLocation(locationMapper.toEntity(view.location()));
         }
 
-        if (view.characteristics() != null) {
+        if (view.characteristics() != null && !view.characteristics().isEmpty()) {
             List<Characteristic> characteristics = view.characteristics().stream()
                     .map(characteristicMapper::toEntity)
                     .collect(Collectors.toList());
