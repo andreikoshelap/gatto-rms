@@ -18,23 +18,38 @@ metadata:
 spec:
   replicas: 1
   selector: { matchLabels: { app: resource-app } }
+  strategy:
+    type: RollingUpdate
   template:
-    metadata: { labels: { app: resource-app } }
+    metadata:
+      labels: { app: resource-app }
     spec:
+      terminationGracePeriodSeconds: 30
       containers:
         - name: app
           image: rms/resource-service:local
           imagePullPolicy: IfNotPresent
-          ports: [ { containerPort: 8085 } ]
+          ports:
+            - containerPort: 8085
           envFrom:
             - configMapRef: { name: rms-config }
           env:
             - name: SPRING_DATASOURCE_PASSWORD
-              valueFrom: { secretKeyRef: { name: db-secret, key: POSTGRES_PASSWORD } }
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: POSTGRES_PASSWORD
           readinessProbe:
             tcpSocket: { port: 8085 }
             initialDelaySeconds: 10
             periodSeconds: 5
+          livenessProbe:
+            tcpSocket: { port: 8085 }
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          resources:
+            requests: { cpu: "100m", memory: "128Mi" }
+            limits:   { cpu: "500m", memory: "512Mi" }
 
 ---
 apiVersion: v1
@@ -57,23 +72,38 @@ metadata:
 spec:
   replicas: 1
   selector: { matchLabels: { app: resource-publisher } }
+  strategy:
+    type: RollingUpdate
   template:
-    metadata: { labels: { app: resource-publisher } }
+    metadata:
+      labels: { app: resource-publisher }
     spec:
+      terminationGracePeriodSeconds: 30
       containers:
         - name: publisher
           image: rms/resource-publisher:local
           imagePullPolicy: IfNotPresent
-          ports: [ { containerPort: 8086 } ]
+          ports:
+            - containerPort: 8086
           envFrom:
             - configMapRef: { name: rms-config }
           env:
             - name: SPRING_DATASOURCE_PASSWORD
-              valueFrom: { secretKeyRef: { name: db-secret, key: POSTGRES_PASSWORD } }
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: POSTGRES_PASSWORD
           readinessProbe:
             tcpSocket: { port: 8086 }
             initialDelaySeconds: 10
             periodSeconds: 5
+          livenessProbe:
+            tcpSocket: { port: 8086 }
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          resources:
+            requests: { cpu: "100m", memory: "128Mi" }
+            limits:   { cpu: "500m", memory: "512Mi" }
 
 ---
 apiVersion: v1
@@ -94,19 +124,45 @@ metadata:
   name: resource-consumer
   namespace: rms
 spec:
-  replicas: 1
+  replicas: 2   # <-- два консюмера в одной группе для распределения партиций и failover
   selector: { matchLabels: { app: resource-consumer } }
+  strategy:
+    type: RollingUpdate
   template:
-    metadata: { labels: { app: resource-consumer } }
+    metadata:
+      labels: { app: resource-consumer }
     spec:
+      terminationGracePeriodSeconds: 30
       containers:
         - name: consumer
           image: rms/resource-consumer:local
           imagePullPolicy: IfNotPresent
-          ports: [ { containerPort: 8087 } ]
+          ports:
+            - containerPort: 8087
           envFrom:
             - configMapRef: { name: rms-config }
           env:
             - name: SPRING_DATASOURCE_PASSWORD
-              valueFrom: { secretKeyRef: { name: db-secret, key: POSTGRES_PASSWORD } }
-
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: POSTGRES_PASSWORD
+            # рекомендуем зафиксировать group.id, чтобы оба пода были в одной группе
+            - name: SPRING_KAFKA_CONSUMER_GROUP_ID
+              value: resource-consumers
+          # мягкое выключение: дайте приложению время закоммитить оффсеты
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 10"]
+          readinessProbe:
+            tcpSocket: { port: 8087 }
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket: { port: 8087 }
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          resources:
+            requests: { cpu: "100m", memory: "128Mi" }
+            limits:   { cpu: "500m", memory: "512Mi" }

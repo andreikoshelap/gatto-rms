@@ -50,7 +50,15 @@ export class ResourceComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result: any) => {
       if (result) {
-        this.refreshResources();
+        if (result.deleted) {
+          this.deleteResource(result.id);
+          this.refreshResources();
+        } else if (isNew) {
+          this.create(result);
+          this.refreshResources();
+        } else {
+          this.save(result);
+        }
       }
     });
   }

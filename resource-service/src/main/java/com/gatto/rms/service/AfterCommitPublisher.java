@@ -15,19 +15,22 @@ public class AfterCommitPublisher {
 
     public void publishCreate(ResourceView view) {
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override public void afterCommit() { restPublisherClient.publishCreate(view); }
+            @Override
+            public void afterCommit() { restPublisherClient.publishCreate(view); }
         });
     }
 
     public void publishUpdate(ResourceView view) {
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override public void afterCommit() { restPublisherClient.publishUpdate(view); }
+            @Override
+            public void afterCommit() { restPublisherClient.publishUpdate(view); }
         });
     }
 
     public void publishDelete(ResourceView view) {
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override public void afterCommit() { restPublisherClient.publishDelete(view); }
+            @Override
+            public void afterCommit() { restPublisherClient.publishDelete(view); }
         });
     }
 }

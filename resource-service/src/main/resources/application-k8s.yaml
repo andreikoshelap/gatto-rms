@@ -1,5 +1,5 @@
 publisher:
-  base-url: http://localhost:8086/publish
+  base-url: http://resource-publisher.rms:8086/publish
 spring:
   application:
     name: resource-app

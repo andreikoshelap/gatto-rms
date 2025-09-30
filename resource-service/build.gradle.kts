@@ -27,6 +27,8 @@ dependencies {
     implementation("org.postgresql:postgresql:42.7.7")
     implementation("org.mapstruct:mapstruct:1.5.5.Final")
     implementation(project(":resource-contracts"))
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor") // optional, for config metadata
 
     implementation("org.mapstruct:mapstruct:1.5.5.Final")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
