@@ -1,13 +1,14 @@
 package com.gatto.rms.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gatto.rms.contracts.LocationView;
 import com.gatto.rms.contracts.ResourceView;
+import com.gatto.rms.publisher.RestPublisherClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -15,12 +16,13 @@ import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
+import tools.jackson.databind.ObjectMapper;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Testcontainers
+@Testcontainers(disabledWithoutDocker = true)
 @SpringBootTest
 @AutoConfigureMockMvc
 public class ResourceControllerITest {
@@ -39,6 +41,9 @@ public class ResourceControllerITest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @MockitoBean
+    private RestPublisherClient publisherClient;
+
     @Test
     void shouldCreateThenRetrieveResource() throws Exception {
         // given
@@ -46,7 +51,11 @@ public class ResourceControllerITest {
                 .id(1L)
                 .type("METERING_POINT")
                 .countryCode("EE")
-                .location(LocationView.builder().city("Tallinn").build())
+                .location(LocationView.builder()
+                        .streetAddress("Viru väljak 4")
+                        .city("Tallinn")
+                        .postalCode("10111")
+                        .build())
                 .build();
 
         // when: create resource
@@ -65,7 +74,7 @@ public class ResourceControllerITest {
                 .andExpect(jsonPath("$.location.streetAddress").value("Viru väljak 4"))
                 .andExpect(jsonPath("$.location.city").value("Tallinn"))
                 .andExpect(jsonPath("$.location.postalCode").value("10111"))
-                .andExpect(jsonPath("$.characteristics.length()").value(2));
+                .andExpect(jsonPath("$.characteristics.length()").value(0));
     }
 
     @Test

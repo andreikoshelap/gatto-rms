@@ -1,18 +1,19 @@
 package com.gatto.rms.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gatto.rms.contracts.ResourceView;
 import com.gatto.rms.service.KafkaPublisherService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import tools.jackson.databind.ObjectMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -26,7 +27,7 @@ class ResourcePublishControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     private KafkaPublisherService kafkaPublisherService;
 
     @Test
@@ -42,7 +43,7 @@ class ResourcePublishControllerTest {
 
         // Capture the JSON sent to the publisher service
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(kafkaPublisherService).publishCreatedEvent(captor.capture(), 1L);
+        verify(kafkaPublisherService).publishCreatedEvent(captor.capture(), eq(1L));
 
         // Deserialize back to ResourceView and assert fields
         ResourceView sent = objectMapper.readValue(captor.getValue(), ResourceView.class);
@@ -61,7 +62,7 @@ class ResourcePublishControllerTest {
                 .andExpect(status().isOk());
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(kafkaPublisherService).publishUpdatedEvent(captor.capture(), 2L);
+        verify(kafkaPublisherService).publishUpdatedEvent(captor.capture(), eq(2L));
 
         ResourceView sent = objectMapper.readValue(captor.getValue(), ResourceView.class);
         assertThat(sent.id()).isEqualTo(2L);
@@ -79,7 +80,7 @@ class ResourcePublishControllerTest {
                 .andExpect(status().isOk());
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(kafkaPublisherService).publishDeletedEvent(captor.capture(), 3L);
+        verify(kafkaPublisherService).publishDeletedEvent(captor.capture(), eq(3L));
 
         ResourceView sent = objectMapper.readValue(captor.getValue(), ResourceView.class);
         assertThat(sent.id()).isEqualTo(3L);

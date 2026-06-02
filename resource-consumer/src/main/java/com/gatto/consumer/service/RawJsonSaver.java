@@ -1,6 +1,5 @@
 package com.gatto.consumer.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gatto.consumer.entity.RawJson;
 import com.gatto.consumer.repository.RawJsonRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import tools.jackson.databind.ObjectMapper;
 
 @Service
 @RequiredArgsConstructor

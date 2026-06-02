@@ -59,7 +59,7 @@ git clone https://github.com/andreikoshelap/gatto-rms
 cd gatto-rms
 
 ## 2. Build the Project
-./gradlew clean build
+.\gradlew clean build
 
 ### 3. Run with Docker
 docker compose up --d

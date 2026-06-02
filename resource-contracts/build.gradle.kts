@@ -20,8 +20,7 @@ publishing {
 }
 
 java {
-    // Optional: ensure Java 21 toolchain
-    toolchain { languageVersion.set(JavaLanguageVersion.of(21)) }
+    toolchain { languageVersion.set(JavaLanguageVersion.of(25)) }
 }
 
 repositories {
@@ -32,13 +31,12 @@ dependencies {
     // Keep contracts lightweight; annotations are optional and compileOnly
     compileOnly("com.fasterxml.jackson.core:jackson-annotations:2.17.2")
 
-    compileOnly("org.projectlombok:lombok:1.18.32")
-    annotationProcessor("org.projectlombok:lombok:1.18.32")
+    compileOnly("org.projectlombok:lombok:1.18.46")
+    annotationProcessor("org.projectlombok:lombok:1.18.46")
 
 }
 
 tasks.test {
     useJUnitPlatform()
 }
-
 

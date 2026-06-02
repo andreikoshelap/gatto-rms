@@ -1,6 +1,5 @@
 package com.gatto.consumer.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gatto.consumer.entity.GeoPoint;
 import com.gatto.consumer.entity.ResourceChange;
 import com.gatto.consumer.entity.ResourceReadModel;
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import tools.jackson.databind.ObjectMapper;
 
 @Service
 @Slf4j
