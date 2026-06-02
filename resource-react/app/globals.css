@@ -1,0 +1,244 @@
+:root {
+  color-scheme: light;
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --surface-muted: #eef2f6;
+  --border: #d9e0e8;
+  --text: #19212a;
+  --muted: #627081;
+  --green: #27845c;
+  --blue: #2f69bf;
+  --amber: #a86f13;
+  --accent: #1f5f8b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+button {
+  font: inherit;
+}
+
+.shell {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 24px 0 40px;
+}
+
+.toolbar,
+.statusCard,
+.panel,
+.activity {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+}
+
+.brand,
+.toolbarActions,
+.statusCard,
+.resourceRow {
+  display: flex;
+  align-items: center;
+}
+
+.brand {
+  gap: 12px;
+}
+
+.eyebrow,
+.brand h1,
+.statusCard h2,
+.statusCard p,
+.panelHeader h2,
+.activity h2 {
+  margin: 0;
+}
+
+.eyebrow {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.brand h1 {
+  font-size: 22px;
+}
+
+.toolbarActions {
+  gap: 10px;
+}
+
+.iconButton,
+.primaryButton {
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.iconButton {
+  width: 40px;
+  background: var(--surface);
+  font-size: 20px;
+}
+
+.primaryButton {
+  padding: 0 16px;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+  font-weight: 700;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.statusCard {
+  position: relative;
+  gap: 12px;
+  min-height: 96px;
+  padding: 16px;
+}
+
+.statusCard h2 {
+  font-size: 15px;
+}
+
+.statusCard p,
+.resourceRow span,
+.panelHeader span,
+.activity time {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.statusDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+}
+
+.statusDot.green {
+  background: var(--green);
+}
+
+.statusDot.blue {
+  background: var(--blue);
+}
+
+.statusDot.amber {
+  background: var(--amber);
+}
+
+.port {
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.panel,
+.activity {
+  padding: 16px;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.resourceList {
+  display: grid;
+  gap: 10px;
+}
+
+.resourceRow {
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 72px;
+  padding: 12px;
+  background: var(--surface-muted);
+  border-radius: 8px;
+}
+
+.resourceRow > div {
+  display: grid;
+  gap: 4px;
+}
+
+.pill {
+  min-width: 78px;
+  padding: 6px 10px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  text-align: center;
+}
+
+.activity ol {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.activity li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.activity li:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+@media (max-width: 860px) {
+  .summaryGrid,
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

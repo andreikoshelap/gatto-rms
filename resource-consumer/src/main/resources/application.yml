@@ -24,9 +24,6 @@ spring:
       group-id: resource-consumer
       enable-auto-commit: false
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       # optional tuning
       max-poll-records: 50
-      properties:
-        spring.json.trusted.packages: com.gatto.rms.contracts
-        spring.json.value.default.type: com.gatto.rms.contracts.ResourceView
