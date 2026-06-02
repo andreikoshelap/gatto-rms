@@ -109,3 +109,37 @@ resource-deleted-events.
 	}
 }
 ```
+
+## Kubernetes setup for local using 
+
+### Start cluster + ingress
+minikube start --driver=docker --cpus=6 --memory=8192
+minikube addons enable ingress
+
+### Namespace & context
+kubectl apply -f .\k8s\00-namespace.yaml
+kubectl config set-context --current --namespace=rms
+
+### Build & load images
+minikube image build -t rms/resource-service:local -f resource-service\resource-service.dockerfile resource-service
+minikube image build -t rms/resource-publisher:local -f resource-publisher\resource-publisher.dockerfile resource-publisher
+minikube image build -t rms/resource-consumer:local -f resource-consumer\resource-consumer.dockerfile resource-consumer
+minikube image build -t rms/resource-ui:local        -f resource-ui\resource-ui.dockerfile        resource-ui
+
+### Apply manifests
+kubectl apply -f .\k8s\10-postgres.yaml
+kubectl apply -f .\k8s\20-kafka.yaml
+kubectl apply -f .\k8s\30-apps.yaml
+kubectl apply -f .\k8s\40-ui.yaml
+kubectl apply -f .\k8s\50-ingress.yaml
+
+### Ingress LoadBalancer + tunnel (pretty URL)
+$patch = @{ spec = @{ type = "LoadBalancer" } } | ConvertTo-Json -Compress
+kubectl -n ingress-nginx patch svc ingress-nginx-controller --type merge --patch $patch
+### (Admin PowerShell) keep open:
+minikube tunnel
+### hosts: 127.0.0.1  rms.local
+
+### Test
+curl.exe -I http://rms.local/
+curl.exe -i http://rms.local/api/resources

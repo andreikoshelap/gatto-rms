@@ -1,0 +1,14 @@
+server:
+  port: 8086
+spring:
+  application.name: resource-publisher
+  kafka:
+    bootstrap-servers: kafka.rms:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      properties:
+        enable.idempotence: true
+        max.in.flight.requests.per.connection: 1
+

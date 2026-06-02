@@ -60,7 +60,7 @@ class ResourceServiceImplTest {
     }
 
     @Test
-    void findById_returnsMappedDTO() {
+    void findById_returnsMappedView() {
         Resource resource = new Resource();
         ResourceView view = ResourceView.builder()
                 .id(1L)
@@ -101,7 +101,7 @@ class ResourceServiceImplTest {
     }
 
     @Test
-    void save_whenIdIsNull_savesNewAndPublishes() {
+    void save_whenIdIsNull_createNewAndPublishes() {
         ResourceView view = ResourceView.builder()
                 .id(1L)
                 .type("METERING_POINT")
@@ -121,7 +121,7 @@ class ResourceServiceImplTest {
         when(repository.save(entity)).thenReturn(saved);
         when(mappingService.toView(saved)).thenReturn(savedDto);
 
-        ResourceView result = service.save(null, view);
+        ResourceView result = service.create(view);
 
         assertThat(result).isEqualTo(savedDto);
         verify(publisher).publishCreate(result);
@@ -138,12 +138,13 @@ class ResourceServiceImplTest {
 
         Resource existing = new Resource();
         existing.setCharacteristics(new ArrayList<>());
+        existing.setId(1L);
 
         Resource toSave = new Resource();
         toSave.setCharacteristics(new ArrayList<>());
 
         Resource updated = new Resource();
-        ResourceView updatedDto = ResourceView.builder()
+        ResourceView resourceView = ResourceView.builder()
                 .id(1L)
                 .type("METERING_POINT")
                 .countryCode("EE")
@@ -154,11 +155,11 @@ class ResourceServiceImplTest {
         when(repository.findById(1L)).thenReturn(Optional.of(existing));
         when(mappingService.toEntity(view)).thenReturn(toSave);
         when(repository.save(existing)).thenReturn(updated);
-        when(mappingService.toView(updated)).thenReturn(updatedDto);
+        when(mappingService.toView(updated)).thenReturn(resourceView);
 
-        ResourceView result = service.save(1L, view);
+        ResourceView result = service.update(1L, view);
 
-        assertThat(result).isEqualTo(updatedDto);
+        assertThat(result).isEqualTo(resourceView);
         verify(repository).save(existing);
         verify(publisher).publishUpdate(result);
     }

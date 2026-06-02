@@ -1,0 +1,46 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rms-ingress
+  namespace: rms
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: rms.local
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: resource-app
+                port:
+                  number: 8085
+          - path: /kafka-ui
+            pathType: Prefix
+            backend:
+              service:
+                name: kafka-ui
+                port:
+                  number: 8080
+          - path: /publisher
+            pathType: Prefix
+            backend:
+              service:
+                name: resource-publisher
+                port:
+                  number: 8086
+          - path: /consumer
+            pathType: Prefix
+            backend:
+              service:
+                name: resource-consumer
+                port:
+                  number: 8087
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: resource-ui
+                port:
+                  number: 80
