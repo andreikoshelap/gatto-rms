@@ -3,6 +3,7 @@ package com.gatto.rms.publisher;
 import com.gatto.rms.contracts.ResourceView;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -13,7 +14,8 @@ public class RestPublisherClient {
 
     private final RestTemplate restTemplate;
 
-    private final String publisherUrl = "http://localhost:8086/publish";
+    @Value("${publisher.url:http://localhost:8086/publish}")
+    private String publisherUrl;
 
     public void publishCreate(ResourceView view) {
         log.info("Calling resource-publisher to publish create");

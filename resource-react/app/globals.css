@@ -90,7 +90,8 @@ button {
 }
 
 .iconButton,
-.primaryButton {
+.primaryButton,
+.secondaryButton {
   height: 40px;
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -109,6 +110,41 @@ button {
   border-color: var(--accent);
   color: white;
   font-weight: 700;
+}
+
+.primaryButton:disabled {
+  background: var(--surface-muted);
+  border-color: var(--border);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.secondaryButton {
+  padding: 0 14px;
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 700;
+}
+
+.userBadge {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  max-width: 220px;
+  height: 40px;
+  padding: 0 12px;
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.userBadge span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .summaryGrid {
@@ -240,5 +276,9 @@ button {
   .toolbar {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .toolbarActions {
+    flex-wrap: wrap;
   }
 }

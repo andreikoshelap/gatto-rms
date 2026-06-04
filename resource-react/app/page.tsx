@@ -1,3 +1,6 @@
+import { auth, isGoogleConfigured, isOidcConfigured } from '../auth';
+import { signInWithGoogle, signInWithOidc, signOutUser } from './auth-actions';
+
 const services = [
   { name: 'Resource API', port: 8085, state: 'Ready', tone: 'green' },
   { name: 'Publisher', port: 8086, state: 'Kafka linked', tone: 'blue' },
@@ -29,7 +32,10 @@ const resources = [
   },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth();
+  const displayName = session?.user?.name ?? session?.user?.email ?? 'Signed in';
+
   return (
     <main className="shell">
       <section className="toolbar" aria-label="Application header">
@@ -41,6 +47,32 @@ export default function Home() {
           </div>
         </div>
         <div className="toolbarActions">
+          {session?.user ? (
+            <>
+              <div className="userBadge" title={session.user.email ?? displayName}>
+                <span>{displayName}</span>
+              </div>
+              <form action={signOutUser}>
+                <button type="submit" className="secondaryButton">
+                  Sign out
+                </button>
+              </form>
+            </>
+          ) : (
+            <form action={isGoogleConfigured ? signInWithGoogle : signInWithOidc}>
+              <button
+                type="submit"
+                className="primaryButton"
+                disabled={!isGoogleConfigured && !isOidcConfigured}
+              >
+                {isGoogleConfigured
+                  ? 'Sign in with Google'
+                  : isOidcConfigured
+                    ? 'Sign in'
+                    : 'OIDC not configured'}
+              </button>
+            </form>
+          )}
           <button type="button" className="iconButton" aria-label="Refresh resources">
             ↻
           </button>

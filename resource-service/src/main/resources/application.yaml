@@ -22,3 +22,6 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 server:
   port: 8085
+
+publisher:
+  url: http://localhost:8086/publish
