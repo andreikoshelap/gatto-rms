@@ -1,0 +1,31 @@
+CREATE TABLE IF NOT EXISTS location (
+    id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    street_address VARCHAR(255) NOT NULL,
+    city VARCHAR(100) NOT NULL,
+    postal_code VARCHAR(20) NOT NULL,
+    country_code VARCHAR(2) NOT NULL,
+    latitude DOUBLE PRECISION NOT NULL,
+    longitude DOUBLE PRECISION NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS resource (
+    id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    version BIGINT DEFAULT 0,
+    type VARCHAR(50) NOT NULL,
+    country_code VARCHAR(2) NOT NULL,
+    location_id BIGINT UNIQUE NOT NULL,
+    CONSTRAINT fk_location FOREIGN KEY (location_id) REFERENCES location(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS characteristic (
+    id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    code VARCHAR(5) NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    value VARCHAR(255) NOT NULL,
+    resource_id BIGINT NOT NULL,
+    CONSTRAINT fk_resource FOREIGN KEY (resource_id) REFERENCES resource(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_characteristic_code ON characteristic(code);
+CREATE INDEX IF NOT EXISTS idx_resource_type ON resource(type);
+CREATE INDEX IF NOT EXISTS idx_location_country ON location(country_code);

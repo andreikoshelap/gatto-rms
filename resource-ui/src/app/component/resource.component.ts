@@ -3,7 +3,6 @@ import {GoogleMap, MapMarker} from '@angular/google-maps';
 import {NgForOf, NgIf} from '@angular/common';
 import { GoogleMapsLoaderService } from '../service/google-maps-loader.service';
 import { ResourceService } from '../service/resource.service';
-import {HttpClient} from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDialogModule } from '@angular/material/dialog';
 import { Resource } from '../model/resource.model';
@@ -34,7 +33,6 @@ export class ResourceComponent implements OnInit {
   constructor(
     private googleMapsLoader: GoogleMapsLoaderService,
     private resourceService: ResourceService,
-    private http: HttpClient,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {}
@@ -51,14 +49,13 @@ export class ResourceComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result: any) => {
       if (result) {
         if (result.deleted) {
-          this.deleteResource(result.id);
-          this.refreshResources();
+          this.markers = this.markers.filter(m => m.resource.id !== result.id);
         } else if (isNew) {
-          this.create(result);
-          this.refreshResources();
+          this.snackBar.open('Resource successfully created.', 'Close', { duration: 3000 });
         } else {
-          this.save(result);
+          this.snackBar.open('Changes saved successfully.', 'Close', { duration: 3000 });
         }
+        this.refreshResources();
       }
     });
   }
@@ -118,33 +115,6 @@ export class ResourceComponent implements OnInit {
         };
         this.openResourceDialog(newResource, true);
       });
-  }
-
-  create(resource: Resource): void {
-    this.http.post<Resource>(`/api/resources`, resource)
-      .subscribe((created: Resource) => {
-        this.markers.push({
-          position: {
-            lat: created.location.latitude,
-            lng: created.location.longitude
-          },
-          label: created.type.charAt(0),
-          title: `${created.type} in ${created.location.city} - ${created.characteristics.map(c => c.value).join(', ')}`,
-          resource: created
-        });
-        this.snackBar.open('Resource successfully created.', 'Close', { duration: 3000 });
-      });
-  }
-
-  save(resource: Resource): void {
-    this.http.put(`/api/resources/${resource.id}`, resource)
-      .subscribe(() => alert('Changes saved successfully.'));
-  }
-
-  deleteResource(resourceId: number): void {
-    this.resourceService.delete(resourceId).subscribe(() => {
-      this.markers = this.markers.filter(m => m.resource.id !== resourceId);
-    });
   }
 
   async ngOnInit(): Promise<void> {

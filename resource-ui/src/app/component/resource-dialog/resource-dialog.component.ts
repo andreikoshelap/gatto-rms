@@ -95,7 +95,7 @@ export class ResourceDialogComponent {
         },
         error: (err) => {
           console.error('Failed to delete resource:', err);
-          this.dialogRef.close({deleted: true, id});
+          this.dialogRef.close();
         }
       });
     } else {

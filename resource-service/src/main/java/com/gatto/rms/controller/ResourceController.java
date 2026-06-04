@@ -2,6 +2,7 @@ package com.gatto.rms.controller;
 
 
 import com.gatto.rms.contracts.ResourceView;
+import com.gatto.rms.error.ResourceDoesNotExistException;
 import com.gatto.rms.service.ResourceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +39,7 @@ public class ResourceController {
         try {
             ResourceView resource = resourceService.findById(id).orElseThrow();
             return ResponseEntity.ok(resource);
-        } catch (NoSuchElementException e) {
+        } catch (NoSuchElementException | ResourceDoesNotExistException e) {
             log.warn("Resource not found with ID: {}", id, e);
             return ResponseEntity.notFound().build();
         } catch (ObjectOptimisticLockingFailureException e) {
@@ -55,7 +56,7 @@ public class ResourceController {
             }
             ResourceView savedResource = resourceService.save(id, view);
             return ResponseEntity.ok(savedResource);
-        } catch (NoSuchElementException e) {
+        } catch (NoSuchElementException | ResourceDoesNotExistException e) {
             log.warn("Resource not found with ID: {}", id, e);
             return ResponseEntity.notFound().build();
         } catch (ObjectOptimisticLockingFailureException e) {
@@ -70,7 +71,7 @@ public class ResourceController {
             log.info("Deleting resource with ID: {}", id);
             resourceService.deleteById(id);
             return ResponseEntity.noContent().build();
-        } catch (NoSuchElementException e) {
+        } catch (NoSuchElementException | ResourceDoesNotExistException e) {
             log.warn("Resource not found with ID: {}", id, e);
             return ResponseEntity.notFound().build();
         } catch (ObjectOptimisticLockingFailureException e) {

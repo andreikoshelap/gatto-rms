@@ -1,7 +1,7 @@
 package com.gatto.rms.repository;
 
 import com.gatto.rms.entity.Role;
-import com.gatto.rms.RoleName;
+import com.gatto.rms.entity.RoleName;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
